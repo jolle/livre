@@ -36,6 +36,8 @@
     "scripts": {
         "dev": "./node_modules/.bin/parcel --public-url \"./\" -t electron src/index.html --no-cache --no-hmr",
         "build": "sh scripts/build.sh",
-        "wrap": "sh scripts/wrap.sh"
+        "wrap": "sh scripts/wrap.sh",
+        "wrap-macos": "sh scripts/wrap-macos.sh",
+        "wrap-windows": "sh scripts/wrap-windows.sh"
     }
 }
