@@ -1,0 +1,36 @@
+.rich-text-editor img[src^='data:image/svg+xml'] {
+    vertical-align: middle;
+    margin: 4px;
+    padding: 3px 10px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+.rich-text-editor.rich-text-focused img[src^='data:image/svg+xml'],
+.rich-text-editor:focus img[src^='data:image/svg+xml'] {
+    background: #edf9ff;
+    border: 1px solid #e6f2f8;
+}
+.rich-text-editor img[src*='data:image/png'] {
+    margin: 4px;
+}
+.rich-text-editor:focus img[src*='data:image/png'],
+.rich-text-editor.rich-text-focused img[src*='data:image/png'] {
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+@import '../../node_modules/rich-text-editor/dist/rich-text-editor.css';
+@import '../../node_modules/mathquill/build/mathquill.css';
+
+.rich-text-editor-tools {
+    padding-top: 40px;
+    top: -140px;
+    transition: top 0.25 ease-in-out, height 0.25 ease-in-out;
+}
+
+.rich-text-editor-characters-expand-collapse {
+    margin-right: 15px;
+}
+
+.rich-text-editor {
+    outline: none !important;
+}

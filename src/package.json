@@ -1,0 +1,23 @@
+{
+    "name": "livre",
+    "version": "1.0.0",
+    "main": "index.js",
+    "license": "MIT",
+    "author": "jolle",
+    "description": "Livre: book.",
+    "homepage": "https://jolle.io",
+    "dependencies": {
+        "autoprefixer": "^9.1.5",
+        "baconjs": "^2.0.9",
+        "electron-store": "^2.0.0",
+        "jquery": "^3.3.1",
+        "marked": "^0.5.1",
+        "mathjax": "^2.7.5",
+        "mathquill": "^0.10.1-a",
+        "otava-digikirja-api": "file:../otava-digikirja-api",
+        "redom": "^3.14.2",
+        "rich-text-editor": "https://github.com/digabi/rich-text-editor.git",
+        "sanitize-html": "^1.19.1",
+        "tailwindcss": "^0.6.6"
+    }
+}

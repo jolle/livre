@@ -1,0 +1,9 @@
+build*
+dist
+Livre-*
+node_modules
+publications
+
+.DS_Store
+
+yarn-error.log

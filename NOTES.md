@@ -1,0 +1,1 @@
+-   Parcel doesn't support environment variables when target is electron (or node) and as such the root path in src/app/helpers/MathJax.ts cannot be determined with `process.env.NODE_ENV`. The build script is replacing the path now manually!
