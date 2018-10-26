@@ -1,4 +1,6 @@
-build*
+build
+build-backup
+
 dist
 Livre-*
 node_modules
