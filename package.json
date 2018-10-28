@@ -38,6 +38,6 @@
         "build": "sh scripts/build.sh",
         "wrap": "sh scripts/wrap.sh",
         "wrap-macos": "sh scripts/wrap-macos.sh",
-        "wrap-windows": "cmd /c call scripts/wrap-windows.bat"
+        "wrap-windows": "cmd /c \"scripts/wrap-windows.bat\""
     }
 }
