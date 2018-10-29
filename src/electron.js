@@ -1,9 +1,60 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const path = require('path');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
+
+const template = [
+    {
+        label: 'Application',
+        submenu: [
+            {
+                label: 'Quit',
+                accelerator: 'Command+Q',
+                click: function() {
+                    app.quit();
+                }
+            }
+        ]
+    },
+    {
+        label: 'Edit',
+        submenu: [
+            { label: 'Undo', accelerator: 'CmdOrCtrl+Z', selector: 'undo:' },
+            {
+                label: 'Redo',
+                accelerator: 'Shift+CmdOrCtrl+Z',
+                selector: 'redo:'
+            },
+            { type: 'separator' },
+            { label: 'Cut', accelerator: 'CmdOrCtrl+X', selector: 'cut:' },
+            { label: 'Copy', accelerator: 'CmdOrCtrl+C', selector: 'copy:' },
+            { label: 'Paste', accelerator: 'CmdOrCtrl+V', selector: 'paste:' },
+            {
+                label: 'Select All',
+                accelerator: 'CmdOrCtrl+A',
+                selector: 'selectAll:'
+            }
+        ]
+    },
+    {
+        label: 'View',
+        submenu: [
+            { role: 'reload' },
+            { role: 'forcereload' },
+            { role: 'toggledevtools' },
+            { type: 'separator' },
+            { role: 'resetzoom' },
+            { role: 'zoomin' },
+            { role: 'zoomout' },
+            { type: 'separator' },
+            { role: 'togglefullscreen' }
+        ]
+    }
+];
+
+Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 
 function createWindow() {
     // Create the browser window.
@@ -25,7 +76,7 @@ function createWindow() {
     );
 
     // Open the DevTools.
-    //mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {
