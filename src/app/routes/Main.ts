@@ -155,82 +155,6 @@ export class Main {
         });
     }
 
-    /*
-    amount
-    9999999
-classLevel
-:
-""
-frontCoverURL
-:
-"https://data.kirjavalitys.fi/data/servlets/ProductRequestServlet?action=getimage&ISBN=9789511295433"
-getBook
-:
-ƒ ()
-id
-:
-"9789511295433"
-materialStorage
-:
-null
-materialType
-:
-"UNDEFINED"
-materialTypeClass
-:
-null
-merchantId
-:
-null
-organizationId
-:
-null
-organizationName
-:
-""
-productId
-:
-"9789511295433"
-productName
-:
-"Juuri 2 digikirja (ONLINE, 48 kk)"
-productType
-:
-"HTML"
-publicationYear
-:
-2016
-publisherId
-:
-"73074"
-schoolSubject
-:
-null
-specifier
-:
-"LISENSSI 48 KK"
-subjectClass
-:
-"Matematiikka"
-subjectSeries
-:
-"Juuri"
-summary
-:
-"Ostaessasi digikirjan saat linkin ja käyttöön oikeuttavan koodin sähköpostiisi. Tuotteen käyttöoikeus on voimassa 48 kk aktivointipäivästä. Tuotteella on 14 vrk:n palautusoikeus, jos tuotetta ei ole aktivoitu. Digikirja toimii HTML5-formaattia tukevilla selaimilla ja laitteilla."
-type
-:
-"NAMED"
-validFrom
-:
-"2017-09-27"
-validTo
-:
-"2021-09-27"
-validToString
-:
-"27.09.2021"
-*/
     update(books: any[]) {
         if (!books) return;
 
@@ -307,7 +231,7 @@ validToString
             '.bg-white.p-4.rounded.shadow.mb-4.mr-4.h-1/3.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s',
             {
                 style: {
-                    width: `${window.innerWidth / 3 - 24}px`
+                    width: 'calc(33vw - 24px)'
                 }
             },
             el('img.block.rounded.bg-grey-light.h-32.mb-4.mx-auto', {
