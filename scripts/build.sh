@@ -22,15 +22,16 @@ fs.writeFileSync("build/package.json", JSON.stringify(Object.keys(packageJson)
 ));
 '
 
+# TODO: NOTE: we are presuming that Jenkins is running on Linux and non-Jenkins on Mac (as it requires the .bak argument)
 if [ -n "$JENKINS" ]; then
-    sed -i 's/otava-digikirja-api/..\/otava-digikirja-api/' package.json
+    sed -i 's/file:otava-digikirja-api/file:..\/otava-digikirja-api/' build/package.json
 else
-    sed -i 's/otava-digikirja-api/..\/..\/otava-digikirja-api/' package.json
+    sed -i '.bak' 's/file:otava-digikirja-api/file:..\/..\/otava-digikirja-api/' build/package.json
 fi
 
 echo "Installing node modules..."
 cd build
-NODE_ENV=production yarn install --production --modules-folder=build/node_modules
+NODE_ENV=production yarn install --production
 cd ..
 
 echo "Replacing DEV paths for PROD..."
