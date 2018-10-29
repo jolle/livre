@@ -5,6 +5,10 @@ cp package.json build/package.json
 echo "Removing old build..."
 rm -rf build
 
+if [ -n "$JENKINS" ]; then
+    sed -i 's/file:..\/otava-digikirja-api/file:otava-digikirja-api/' package.json
+fi
+
 echo "Installing dependencies..."
 yarn install
 
