@@ -1,14 +1,27 @@
+echo "Copying package.json..."
+cp package.json build/package.json
+
 echo "Removing old build..."
 rm -rf build
+
+echo "Removing dependencies from package.json..."
+node -e '
+const fs = require("fs");
+const packageJson = JSON.parse(fs.readFileSync("package.json").toString());
+
+packageJson.dependencies = {};
+
+fs.writeFileSync("package.json", JSON.stringify(packageJson));
+'
+
+echo "Installing devDependencies..."
+yarn install
 
 echo "Building..."
 NODE_ENV=production ./node_modules/.bin/parcel build --no-source-maps --out-dir=build --public-url "./" -t electron src/index.html --no-cache
 
 echo "Copying electron..."
 cp src/electron.js build/index.js
-
-echo "Copying package.json..."
-cp package.json build/package.json
 
 echo "Cleaning package.json..."
 node -e '
@@ -25,8 +38,6 @@ fs.writeFileSync("build/package.json", JSON.stringify(Object.keys(packageJson)
 # TODO: NOTE: we are presuming that Jenkins is running on Linux and non-Jenkins on Mac (as it requires the .bak argument)
 if [ -z "$JENKINS" ]; then
     sed -i '.bak' 's/file:..\/otava-digikirja-api/file:..\/..\/otava-digikirja-api/' build/package.json
-else
-    sed -i 's/file:..\/otava-digikirja-api/file:otava-digikirja-api/' build/package.json
 fi
 
 echo "Installing node modules..."
