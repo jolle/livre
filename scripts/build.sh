@@ -21,7 +21,7 @@ cp src/electron.js build/index.js
 echo "Cleaning package.json..."
 node -e '
 const fs = require("fs");
-const packageJson = require("./build/package.json");
+const packageJson = JSON.parse(fs.readFileSync("./build/package.json").toString());
 const whitelist = ["name", "description", "author", "version", "license", "private", "dependencies"];
 fs.writeFileSync("build/package.json", JSON.stringify(Object.keys(packageJson)
     .filter(k => whitelist.includes(k))
