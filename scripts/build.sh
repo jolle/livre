@@ -25,6 +25,8 @@ fs.writeFileSync("build/package.json", JSON.stringify(Object.keys(packageJson)
 # TODO: NOTE: we are presuming that Jenkins is running on Linux and non-Jenkins on Mac (as it requires the .bak argument)
 if [ -z "$JENKINS" ]; then
     sed -i '.bak' 's/file:..\/otava-digikirja-api/file:..\/..\/otava-digikirja-api/' build/package.json
+else
+    sed -i 's/file:..\/otava-digikirja-api/file:otava-digikirja-api/' build/package.json
 fi
 
 echo "Installing node modules..."
