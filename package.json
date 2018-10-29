@@ -9,6 +9,7 @@
     "private": true,
     "dependencies": {
         "adm-zip": "^0.4.11",
+        "baconjs": "^2.0.9",
         "electron-store": "^2.0.0",
         "jquery": "^3.3.1",
         "marked": "^0.5.1",
