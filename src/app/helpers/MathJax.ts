@@ -32,7 +32,7 @@ MathJax.Hub.Config({
     messageStyle: 'none'
 });
 // @ts-ignore
-MathJax.Ajax.config.root = __dirname + `/node_modules/mathjax`;
+MathJax.Ajax.config.root = __dirname + `/../node_modules/mathjax`;
 
 const resultBox = el('.', '\\({}\\)', { style: { display: 'none' } });
 document.body.appendChild(resultBox);
