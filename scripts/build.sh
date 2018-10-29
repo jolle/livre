@@ -1,4 +1,5 @@
 echo "Copying package.json..."
+mkdir build
 cp package.json build/package.json
 
 echo "Removing old build..."
