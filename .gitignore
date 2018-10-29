@@ -1,10 +1,9 @@
 build
-build-backup
 
 dist
 Livre-*
 node_modules
-publications
+packed
 
 .DS_Store
 

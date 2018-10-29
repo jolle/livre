@@ -1,8 +1,12 @@
 {
     "name": "livre",
+    "description": "Livre: the alternative way.",
+    "author": {
+        "name": "jolle"
+    },
     "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
+    "license": "PRIVATE",
+    "private": true,
     "dependencies": {
         "adm-zip": "^0.4.11",
         "autoprefixer": "^9.1.5",
@@ -12,12 +16,11 @@
         "marked": "^0.5.1",
         "mathjax": "^2.7.5",
         "mathquill": "^0.10.1-a",
-        "otava-digikirja-api": "file:../otava-digikirja-api",
+        "otava-digikirja-api": "file:../../otava-digikirja-api",
         "redom": "^3.14.2",
         "rich-text-editor": "https://github.com/digabi/rich-text-editor.git",
         "sanitize-html": "^1.19.1",
-        "semver": "^5.6.0",
-        "tailwindcss": "^0.6.6"
+        "semver": "^5.6.0"
     },
     "devDependencies": {
         "@types/adm-zip": "^0.4.31",
@@ -27,18 +30,52 @@
         "@types/redom": "^3.12.0",
         "@types/semver": "^5.5.0",
         "electron": "^3.0.4",
+        "electron-builder": "^20.29.0",
         "electron-installer-windows": "^1.1.0",
         "electron-packager": "^12.2.0",
         "parcel": "^1.10.3",
         "sass": "^1.14.2",
+        "tailwindcss": "^0.6.6",
         "typescript": "^3.1.3"
     },
     "scripts": {
         "dev": "./node_modules/.bin/parcel --public-url \"./\" -t electron src/index.html --no-cache --no-hmr",
         "build": "sh scripts/build.sh",
-        "wrap": "sh scripts/wrap.sh",
-        "wrap-macos": "sh scripts/wrap-macos.sh",
-        "wrap-windows": "cmd /c call scripts/wrap-windows.bat",
-        "wrap-windows-2": "cmd /c call scripts/wrap-windows-2.bat"
+        "pack-mac": "./node_modules/.bin/build -m"
+    },
+    "build": {
+        "appId": "io.jolle.livre",
+        "productName": "Livre",
+        "copyright": "Copyright © 2018 Jolle",
+        "mac": {
+            "category": "public.app-category.productivity",
+            "target": "dmg"
+        },
+        "nsis": {
+            "createDesktopShortcut": "always"
+        },
+        "linux": {
+            "category": "Productivity"
+        },
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64",
+                        "ia32"
+                    ]
+                }
+            ]
+        },
+        "directories": {
+            "output": "packed",
+            "app": "build",
+            "buildResources": "packaging"
+        },
+        "publish": {
+            "provider": "s3",
+            "bucket": "bucket-name"
+        }
     }
 }
