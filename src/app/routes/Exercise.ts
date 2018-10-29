@@ -24,9 +24,9 @@ export class Exercise {
         let goback: HTMLElement;
         let content: HTMLElement;
         this.el = el(
-            '.h-screen.w-screen.bg-grey-lightest.overflow-scroll',
+            '.min-h-screen.w-screen.bg-grey-lightest',
             (content = el(
-                '.w-4/5.min-h-full.bg-white.mx-auto.p-6.relative.shadow.pt-10',
+                '.w-4/5.min-h-screen.bg-white.mx-auto.p-6.relative.shadow.pt-10',
                 {
                     style: {
                         transition: 'padding 0.25s ease-in-out'
