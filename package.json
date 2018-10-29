@@ -47,7 +47,7 @@
         "copyright": "Copyright © 2018 Jolle",
         "mac": {
             "category": "public.app-category.productivity",
-            "target": "dmg"
+            "target": "zip"
         },
         "nsis": {
             "createDesktopShortcut": "always"
