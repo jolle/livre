@@ -23,7 +23,9 @@ fs.writeFileSync("build/package.json", JSON.stringify(Object.keys(packageJson)
 '
 
 if [ -n "$JENKINS" ]; then
-    sed -i 's/..\/..\/otava-digikirja-api/..\/otava-digikirja-api/' package.json
+    sed -i 's/otava-digikirja-api/..\/otava-digikirja-api/' package.json
+else
+    sed -i 's/otava-digikirja-api/..\/..\/otava-digikirja-api/' package.json
 fi
 
 echo "Installing node modules..."
