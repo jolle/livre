@@ -5,17 +5,7 @@ cp package.json build/package.json
 echo "Removing old build..."
 rm -rf build
 
-echo "Removing dependencies from package.json..."
-node -e '
-const fs = require("fs");
-const packageJson = JSON.parse(fs.readFileSync("package.json").toString());
-
-packageJson.dependencies = {};
-
-fs.writeFileSync("package.json", JSON.stringify(packageJson));
-'
-
-echo "Installing devDependencies..."
+echo "Installing dependencies..."
 yarn install
 
 echo "Building..."
