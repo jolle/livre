@@ -38,7 +38,7 @@ NODE_ENV=production yarn install --production
 cd ..
 
 echo "Replacing DEV paths for PROD..."
-if [ "$OSTYPE" == "darwin"* ]; then
+if [[ "$OSTYPE" == "darwin"* ]]; then
     sed -i '.bak' 's/..\/node_modules\/mathjax/\/node_modules\/mathjax/g' build/src.*.js
 else
     sed -i 's/..\/node_modules\/mathjax/\/node_modules\/mathjax/g' build/src.*.js
