@@ -1,4 +1,4 @@
-import { MathEditor } from './../components/MathEditor';
+import { BookButton } from './../components/main/BookButton';
 import { App } from './../App';
 import { el, setChildren } from 'redom';
 
@@ -44,7 +44,7 @@ export class Main {
         this.books = [];
 
         this.el = el(
-            '.p-4.pb-0.pt-10.bg-grey-lightest.w-screen.h-screen.overflow-scroll',
+            '.px-4.bg-grey-lightest.w-screen.h-screen.overflow-y-scroll.overflow-x-hidden',
             (this.loadingOverlay = el(
                 '.absolute.pin-t.pin-b.pin-l.pin-r.flex.items-center.justify-center.z-50',
                 {
@@ -68,52 +68,61 @@ export class Main {
                 ))
             )),
             el(
-                '.mr-4.text-grey-dark.inline-block.w-64',
-                el('h4.text-xs.tracking-wide.uppercase.mb-1', 'Grouping style'),
+                'header.bg-white.pt-12.py-4.px-6.border-b.border-grey-lighter.-mx-6.sticky.pin-t.z-30',
                 el(
-                    '.custom-select.w-full',
-                    (this.groupingStyleInput = el(
-                        'select.w-full',
-                        ['mixed', 'by subject'].map(term =>
-                            el(
-                                'option',
-                                {
-                                    value: term,
-                                    selected: term === this.groupingStyle
-                                },
-                                term
+                    '.mr-4.text-grey-dark.inline-block.w-64',
+                    el(
+                        'h4.text-xs.tracking-wide.uppercase.mb-1',
+                        'Grouping style'
+                    ),
+                    el(
+                        '.custom-select.w-full',
+                        (this.groupingStyleInput = el(
+                            'select.w-full',
+                            ['mixed', 'by subject'].map(term =>
+                                el(
+                                    'option',
+                                    {
+                                        value: term,
+                                        selected: term === this.groupingStyle
+                                    },
+                                    term
+                                )
                             )
-                        )
-                    ) as HTMLSelectElement)
-                )
-            ),
-            el(
-                '.mr-4.text-grey-dark.inline-block',
-                el('h4.text-xs.tracking-wide.uppercase.mb-1', 'Sorting order'),
+                        ) as HTMLSelectElement)
+                    )
+                ),
                 el(
-                    '.custom-select',
-                    (this.sortingOrderInput = el(
-                        'select',
-                        [
-                            'buy date (newest to oldest)',
-                            'buy date (oldest to newest)',
-                            'alphabetical (a to z)',
-                            'alphabetical (z to a)'
-                        ].map(term =>
-                            el(
-                                'option',
-                                {
-                                    value: term,
-                                    selected: term === this.sortingOrder
-                                },
-                                term
+                    '.mr-4.text-grey-dark.inline-block',
+                    el(
+                        'h4.text-xs.tracking-wide.uppercase.mb-1',
+                        'Sorting order'
+                    ),
+                    el(
+                        '.custom-select',
+                        (this.sortingOrderInput = el(
+                            'select',
+                            [
+                                'buy date (newest to oldest)',
+                                'buy date (oldest to newest)',
+                                'alphabetical (a to z)',
+                                'alphabetical (z to a)'
+                            ].map(term =>
+                                el(
+                                    'option',
+                                    {
+                                        value: term,
+                                        selected: term === this.sortingOrder
+                                    },
+                                    term
+                                )
                             )
-                        )
-                    ) as HTMLSelectElement)
+                        ) as HTMLSelectElement)
+                    )
                 )
             ),
             (this.bookContainer = el(
-                '.relative.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4',
+                '.relative.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4.z-10',
                 ...Array(4)
                     .fill(null)
                     .map(() =>
@@ -155,7 +164,7 @@ export class Main {
         });
     }
 
-    update(books: any[]) {
+    async update(books: any[]) {
         if (!books) return;
 
         books = books.reduce((p, n) => p.concat(n), []);
@@ -184,8 +193,12 @@ export class Main {
         if (this.groupingStyle === GroupingStyle.MIXED) {
             setChildren(this.bookContainer, [
                 el(
-                    '.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4',
-                    ...sort(books).map((book: any) => this.makeBook(book))
+                    '.flex.items-start.flex-wrap.overflow-scroll.-mr-4',
+                    ...((await Promise.all(
+                        sort(books).map((book: any) =>
+                            BookButton.getElement(book, this)
+                        )
+                    )).filter(a => a) as HTMLElement[])
                 )
             ]);
         } else if (this.groupingStyle === GroupingStyle.BY_SUBJECT) {
@@ -202,71 +215,32 @@ export class Main {
             );
             setChildren(
                 this.bookContainer,
-                Object.keys(booksBySubject).map(subject =>
-                    el(
-                        '.w-full.mb-4',
+                await Promise.all(
+                    Object.keys(booksBySubject).map(async subject =>
                         el(
-                            'h3.tracking-wide.text-sm.text-grey-dark.uppercase.border-b.border-grey-light.py-4',
-                            {
-                                style: {
-                                    width: 'calc(100% - 1rem)'
-                                }
-                            },
-                            subject
-                        ),
-                        el(
-                            '.pt-4.flex.items-start.flex-wrap.-mr-4',
-                            ...sort(booksBySubject[subject]).map((book: any) =>
-                                this.makeBook(book)
+                            '.w-full.mb-4',
+                            el(
+                                'h3.tracking-wide.text-sm.text-grey-dark.uppercase.border-b.border-grey-light.py-2',
+                                {
+                                    style: {
+                                        width: 'calc(100% - 1rem)'
+                                    }
+                                },
+                                subject
+                            ),
+                            el(
+                                '.pt-4.flex.items-start.flex-wrap.-mr-4',
+                                ...((await Promise.all(
+                                    sort(booksBySubject[subject]).map(
+                                        (book: any) =>
+                                            BookButton.getElement(book, this)
+                                    )
+                                )).filter(a => a) as HTMLElement[])
                             )
                         )
                     )
                 )
             );
         }
-    }
-
-    private makeBook(book: any) {
-        const bookElement = el(
-            '.bg-white.p-4.rounded.shadow.mb-4.mr-4.h-1/3.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s',
-            {
-                style: {
-                    width: 'calc(33vw - 24px)'
-                }
-            },
-            el('img.block.rounded.bg-grey-light.h-32.mb-4.mx-auto', {
-                src: book.frontCoverURL
-            }),
-            el(
-                '.h-12',
-                el('h2.text-sm.font-bold.text-center', book.productName)
-            )
-        );
-
-        bookElement.addEventListener('click', () => {
-            this.currentlyLoadingBook = book.id;
-            this.loadingOverlay.style.display = 'block';
-
-            book.getBook().then((actualBook: any) => {
-                if (
-                    this.currentlyLoadingBook === null ||
-                    this.currentlyLoadingBook !== book.id
-                )
-                    return; // loading has been cancelled
-                actualBook.getPages().then((pages: any) => {
-                    if (
-                        this.currentlyLoadingBook === null ||
-                        this.currentlyLoadingBook !== book.id
-                    )
-                        return; // loading has been cancelled
-                    this.parent.router.update('book', {
-                        pages,
-                        book: actualBook
-                    });
-                });
-            });
-        });
-
-        return bookElement;
     }
 }

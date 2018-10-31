@@ -1058,6 +1058,14 @@ brfs@^1.2.0:
     static-module "^2.2.0"
     through2 "^2.0.0"
 
+brfs@~0.0.8:
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/brfs/-/brfs-0.0.9.tgz#92455bc36fbbe1267a37967bdfa9571088196aba"
+  dependencies:
+    escodegen "0.0.17"
+    falafel "~0.1.6"
+    through "~2.2.0"
+
 brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
@@ -2212,6 +2220,15 @@ escape-string-regexp@^1.0.2, escape-string-regexp@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
 
+escodegen@0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-0.0.17.tgz#1e78d17df1004fd7a88f2fed3b8b8592f3217f9c"
+  dependencies:
+    esprima "~1.0.2"
+    estraverse "~0.0.4"
+  optionalDependencies:
+    source-map ">= 0.1.2"
+
 escodegen@^1.6.1, escodegen@^1.8.1:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/escodegen/-/escodegen-1.11.0.tgz#b27a9389481d5bfd5bec76f7bb1eb3f8f4556589"
@@ -2246,9 +2263,17 @@ esprima@^4.0.0:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/esprima/-/esprima-4.0.1.tgz#13b04cdb3e6c5d19df91ab6987a8695619b0aa71"
 
+esprima@~1.0.2:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/esprima/-/esprima-1.0.4.tgz#9f557e08fc3b4d26ece9dd34f8fbf476b62585ad"
+
 estraverse@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-4.2.0.tgz#0dee3fed31fcd469618ce7342099fc1afa0bdb13"
+
+estraverse@~0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-0.0.4.tgz#01a0932dfee574684a598af5a67c3bf9b6428db2"
 
 esutils@^2.0.0, esutils@^2.0.2:
   version "2.0.2"
@@ -2374,6 +2399,12 @@ falafel@^2.1.0:
     foreach "^2.0.5"
     isarray "0.0.1"
     object-keys "^1.0.6"
+
+falafel@~0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/falafel/-/falafel-0.1.6.tgz#3084cf3d41b59d15c813be6f259557fdc82b0660"
+  dependencies:
+    esprima "~1.0.2"
 
 fast-deep-equal@^1.0.0:
   version "1.1.0"
@@ -2562,6 +2593,16 @@ gauge@~2.7.3:
 get-caller-file@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-1.0.3.tgz#f978fa4c90d1dfe7ff2d6beda2a515e713bdcf4a"
+
+get-image-data@~3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/get-image-data/-/get-image-data-3.0.1.tgz#b5e6942c90c31fbb8b93b22c0642fbed231b7cf2"
+  dependencies:
+    get-image "~2.0.0"
+
+get-image@~2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/get-image/-/get-image-2.0.0.tgz#d1aa51dad903977cd39b325d62d995b4cdb365b0"
 
 get-port@^3.2.0:
   version "3.2.0"
@@ -2804,6 +2845,13 @@ http-signature@~1.2.0:
 https-browserify@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/https-browserify/-/https-browserify-1.0.0.tgz#ec06c10e0a34c0f2faf199f7fd7fc78fffd03c73"
+
+huey@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/huey/-/huey-2.0.0.tgz#60e178cea66be0c0c01b1933a7ab66b3bb47bbe6"
+  dependencies:
+    brfs "~0.0.8"
+    get-image-data "~3.0.1"
 
 iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.24"
@@ -5441,6 +5489,10 @@ source-map@0.6.1, source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
+"source-map@>= 0.1.2":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
+
 source-map@^0.5.0, source-map@^0.5.3, source-map@^0.5.6:
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
@@ -5768,6 +5820,10 @@ through2@~0.2.3:
 through@^2.3.6:
   version "2.3.8"
   resolved "http://registry.npmjs.org/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
+
+through@~2.2.0:
+  version "2.2.7"
+  resolved "http://registry.npmjs.org/through/-/through-2.2.7.tgz#6e8e21200191d4eb6a99f6f010df46aa1c6eb2bd"
 
 timed-out@^4.0.0:
   version "4.0.1"
