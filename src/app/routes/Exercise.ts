@@ -181,27 +181,6 @@ export class Exercise {
                                 );
                             let previous = new Date();
                             let previousValue = '';
-                            /*this.intervals.push(
-                                setInterval(() => {
-                                    const current = editor.getValue();
-                                    if (
-                                        !document.body.classList.contains(
-                                            'rich-text-editor-focus'
-                                        ) &&
-                                        previous !== current
-                                    ) {
-                                        previous = current;
-
-                                        this.pendSave(
-                                            bookState.book.saveQuestion(
-                                                sub,
-                                                this.escape(current),
-                                                content.original
-                                            )
-                                        );
-                                    }
-                                }, 2500)
-                            );*/
                             editor.on(
                                 'value',
                                 ({
@@ -310,6 +289,10 @@ export class Exercise {
                     }px; height: ${attributes.h}px"></iframe>`;
                 return '';
             }
+        );
+        str = str.replace(
+            /([0-9]+)_([^_]+)_/g,
+            (_, multiplier, variable) => `${multiplier}<i>${variable}</i>`
         );
 
         const svgs = await Promise.all(
