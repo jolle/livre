@@ -313,7 +313,10 @@ export class Exercise {
         this.pendingSaves.push(promise);
 
         this.savingContainer.style.bottom = '0';
-        promise.then(res => {
+        Promise.all([
+            promise,
+            new Promise(resolve => setTimeout(() => resolve(), 2 * 200 + 200))
+        ]).then(([res]) => {
             this.pendingSaves.splice(this.pendingSaves.indexOf(promise), 1);
             if (this.pendingSaves.length === 0) {
                 this.savingContainer.style.bottom = '-200px';
