@@ -3,6 +3,7 @@ import { App } from '../App';
 
 // @ts-ignore
 import chevronRight from '../assets/chevron-right.svg';
+import { IS_MAC } from '../constants';
 
 export class Book {
     el: HTMLElement;
@@ -11,7 +12,9 @@ export class Book {
     constructor(parent: App, { pages, book }: { pages: any[]; book: any }) {
         this.book = book;
         this.el = el(
-            '.bg-grey-lightest.p-4.pt-12.w-screen.h-screen.overflow-scroll',
+            `.bg-grey-lightest.p-4.pt-${
+                IS_MAC ? '12' : '4'
+            }.w-screen.h-screen.overflow-scroll`,
             el(
                 'ul.list-reset',
                 pages.filter(page => page.level === 'top').map(page =>

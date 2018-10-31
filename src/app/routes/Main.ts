@@ -1,3 +1,4 @@
+import { IS_MAC } from './../constants';
 import { BookButton } from './../components/main/BookButton';
 import { App } from './../App';
 import { el, setChildren } from 'redom';
@@ -68,7 +69,9 @@ export class Main {
                 ))
             )),
             el(
-                'header.bg-white.pt-12.py-4.px-6.border-b.border-grey-lighter.-mx-6.sticky.pin-t.z-30',
+                `header.bg-white.pt-${
+                    IS_MAC ? '12' : '4'
+                }.py-4.px-6.border-b.border-grey-lighter.-mx-6.sticky.pin-t.z-30`,
                 el(
                     '.mr-4.text-grey-dark.inline-block.w-64',
                     el(
