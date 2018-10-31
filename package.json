@@ -38,7 +38,7 @@
     },
     "scripts": {
         "dev": "./node_modules/.bin/parcel --public-url \"./\" -t electron src/index.html --no-cache --no-hmr",
-        "build": "sh scripts/build.sh",
+        "build": "bash scripts/build.sh",
         "pack-mac": "./node_modules/.bin/build -m",
         "pack-windows": ".\\node_modules\\.bin\\build -w"
     },
