@@ -9,7 +9,9 @@ export class BookButton {
         const backgroundImage = await this.getBookBackground(book, parent);
         const [r, g, b] = await this.getDominantColor(backgroundImage);
 
-        const months = (book.specifier.match(/([0-9]+)\s+?kk/i) || [])[1];
+        const months =
+            (book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
+            (book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
 
         const bookElement = el(
             '.relative.bg-white.p-6.rounded.shadow.mb-4.mr-4.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s.overflow-hidden',
@@ -52,6 +54,8 @@ export class BookButton {
                 )
             )
         );
+
+        console.log(book);
 
         bookElement.addEventListener('click', () => {
             parent.currentlyLoadingBook = book.id;
