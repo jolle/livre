@@ -55,8 +55,6 @@ export class BookButton {
             )
         );
 
-        console.log(book);
-
         bookElement.addEventListener('click', () => {
             parent.currentlyLoadingBook = book.id;
             parent.loadingOverlay.style.display = 'block';
