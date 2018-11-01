@@ -1,13 +1,16 @@
-const dominant = require('huey/dominant');
+import { getImage, findCoverUrl } from './../../helpers/CoverFinder';
+import { getDominantColor } from './../../helpers/Colors';
+import { stripBookName, getBookBackground } from './../../helpers/BookUtils';
 import { Pill } from './Pill';
-import axios from 'axios';
 import { el } from 'redom';
 import { Main } from '../../routes/Main';
 
 export class BookButton {
     static async getElement(book: any, parent: Main) {
-        const backgroundImage = await this.getBookBackground(book, parent);
-        const [r, g, b] = await this.getDominantColor(backgroundImage);
+        const backgroundImage = await getBookBackground(book);
+        const [r, g, b] = await getDominantColor(
+            await getImage(backgroundImage)
+        );
 
         const months =
             (book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
@@ -22,16 +25,16 @@ export class BookButton {
             },
             el('.absolute.pin-t.pin-b.pin-r.pin-l.-m-6.z-10', {
                 style: {
-                    filter: 'blur(15px)',
+                    filter: 'blur(20px)',
                     backgroundImage: `url(${backgroundImage})`,
-                    backgroundSize: 'cover cover',
+                    backgroundSize: 'cover',
                     zIndex: '-1'
                 }
             }),
             el(
                 '.z-50',
                 el('img.block.bg-grey-light.h-32.mb-4.mx-auto.shadow', {
-                    src: book.frontCoverURL,
+                    src: await findCoverUrl(book.id),
                     style: {
                         borderRadius: '15px'
                     }
@@ -45,7 +48,7 @@ export class BookButton {
                                 textShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
                             }
                         },
-                        this.stripBookName(book.productName)
+                        stripBookName(book.productName)
                     )
                 ),
                 el(
@@ -80,69 +83,5 @@ export class BookButton {
         });
 
         return bookElement;
-    }
-
-    static stripBookName(name: string) {
-        //const duration = (name.match(/([0-9]+) kk/) || [])[1];
-
-        name = name.replace(
-            /\s-\s[A-Z]+[0-9]+\s[^:]+\s?:?\s?yhden käyttäjän lisenssi/g,
-            ''
-        );
-        name = name.replace(/\s-\s[A-Z]+[0-9]+/g, '');
-        name = name.replace(/\s?(:|-)?\s?yhden käyttäjän lisenssi/gi, '');
-        name = name.replace(/\s?ONL(INE)?/g, '');
-        name = name.replace(/\s?\([^)]+\)/g, '');
-        name = name.replace(/\s?digikirja/g, '');
-        name = name.replace(/\s?[0-9]+ kk/g, '');
-        name = name.trim();
-
-        return name;
-    }
-
-    static async getBookBackground(book: any, parent: Main) {
-        if (parent.parent.store.has(`livre-book-background-${book.id}`))
-            return parent.parent.store.get(`livre-book-background-${book.id}`);
-
-        const setStoreAndReturn = (bg: string) => {
-            parent.parent.store.set(`livre-book-background-${book.id}`, bg);
-            return bg;
-        };
-
-        const cloubiBackground = `https://cloubi.otava.fi/html/cloubi/edge/product-themes/Otava${this.stripBookName(
-            book.productName
-        ).replace(/\s/g, '')}ProductTheme/img/period_background.jpg`;
-        const { status } = await axios.head(cloubiBackground, {
-            validateStatus: () => true
-        });
-        if (status === 200) return setStoreAndReturn(cloubiBackground);
-
-        return setStoreAndReturn(book.frontCoverURL);
-    }
-
-    static async getDominantColor(imageUrl: string) {
-        const imgOfBg = (await new Promise(resolve => {
-            const img = new Image();
-            img.src = imageUrl;
-            img.addEventListener('load', () => resolve(img));
-            img.addEventListener('error', () => resolve());
-        })) as HTMLImageElement;
-
-        if (!imgOfBg) return;
-
-        const tmpCanvas = document.createElement('canvas');
-        tmpCanvas.width = imgOfBg.width;
-        tmpCanvas.height = imgOfBg.height;
-        const ctx = tmpCanvas.getContext('2d');
-        if (!ctx) return;
-        ctx.drawImage(imgOfBg, 0, 0);
-        const { data } = ctx.getImageData(
-            0,
-            0,
-            tmpCanvas.width,
-            tmpCanvas.height
-        );
-
-        return dominant(data) || [0, 0, 0];
     }
 }
