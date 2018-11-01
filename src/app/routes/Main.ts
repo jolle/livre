@@ -1,3 +1,5 @@
+import { SimpleBookListButton } from './../components/main/SimpleBookListButton';
+import { SimpleBookButton } from './../components/main/SimpleBookButton';
 import { IS_MAC } from './../constants';
 import { BookButton } from './../components/main/BookButton';
 import { App } from './../App';
@@ -18,7 +20,9 @@ enum SortingOrder {
 
 enum DisplayStyle {
     TILES = 'tiles',
-    LIST = 'list'
+    LIST = 'list',
+    SIMPLE = 'simple',
+    SIMPLE_LIST = 'simple list'
 }
 
 export class Main {
@@ -144,15 +148,16 @@ export class Main {
                         '.custom-select.w-full',
                         (this.displayStyleInput = el(
                             'select.w-full',
-                            ['tiles', 'list'].map(term =>
-                                el(
-                                    'option',
-                                    {
-                                        value: term,
-                                        selected: term === this.displayStyle
-                                    },
-                                    term
-                                )
+                            ['tiles', 'list', 'simple', 'simple list'].map(
+                                term =>
+                                    el(
+                                        'option',
+                                        {
+                                            value: term,
+                                            selected: term === this.displayStyle
+                                        },
+                                        term
+                                    )
                             )
                         ) as HTMLSelectElement)
                     )
@@ -235,24 +240,32 @@ export class Main {
 
         if (this.groupingStyle === GroupingStyle.MIXED) {
             setChildren(this.bookContainer, [
-                this.displayStyle === DisplayStyle.TILES
+                this.displayStyle === DisplayStyle.LIST ||
+                this.displayStyle === DisplayStyle.SIMPLE_LIST
                     ? el(
-                          '.flex.items-start.flex-wrap.overflow-scroll.-mr-4',
-                          ...((await Promise.all(
-                              sort(books).map((book: any) =>
-                                  BookButton.getElement(book, this)
-                              )
-                          )).filter(a => a) as HTMLElement[])
-                      )
-                    : el(
                           '.overflow-scroll.w-full.pr-4',
                           ...((await Promise.all(
                               sort(books).map((book: any) =>
-                                  BookListButton.getElement(book, this)
+                                  (this.displayStyle ===
+                                  DisplayStyle.SIMPLE_LIST
+                                      ? SimpleBookListButton
+                                      : BookListButton
+                                  ).getElement(book, this)
                               )
                           )).filter(a => a) as HTMLElement[]).map(element =>
                               el('.w-1/2.inline-block.px-2', element)
                           )
+                      )
+                    : el(
+                          '.flex.items-start.flex-wrap.overflow-scroll.-mr-4',
+                          ...((await Promise.all(
+                              sort(books).map((book: any) =>
+                                  (this.displayStyle === DisplayStyle.SIMPLE
+                                      ? SimpleBookButton
+                                      : BookButton
+                                  ).getElement(book, this)
+                              )
+                          )).filter(a => a) as HTMLElement[])
                       )
             ]);
         } else if (this.groupingStyle === GroupingStyle.BY_SUBJECT) {
@@ -272,8 +285,31 @@ export class Main {
                 await Promise.all(
                     Object.keys(booksBySubject).map(
                         async subject =>
-                            this.displayStyle === DisplayStyle.TILES
+                            this.displayStyle === DisplayStyle.LIST ||
+                            this.displayStyle === DisplayStyle.SIMPLE_LIST
                                 ? el(
+                                      '.w-1/2.px-1',
+                                      el(
+                                          'h3.tracking-wide.text-xs.text-grey-dark.uppercase.pt-2.pb-1',
+                                          {
+                                              style: {
+                                                  width: 'calc(100% - 1rem)'
+                                              }
+                                          },
+                                          subject
+                                      ),
+                                      ...((await Promise.all(
+                                          sort(booksBySubject[subject]).map(
+                                              (book: any) =>
+                                                  (this.displayStyle ===
+                                                  DisplayStyle.SIMPLE_LIST
+                                                      ? SimpleBookListButton
+                                                      : BookListButton
+                                                  ).getElement(book, this)
+                                          )
+                                      )).filter(a => a) as HTMLElement[])
+                                  )
+                                : el(
                                       '.w-full.mb-4',
                                       el(
                                           'h3.tracking-wide.text-sm.text-grey-dark.uppercase.border-b.border-grey-light.py-2',
@@ -289,34 +325,14 @@ export class Main {
                                           ...((await Promise.all(
                                               sort(booksBySubject[subject]).map(
                                                   (book: any) =>
-                                                      BookButton.getElement(
-                                                          book,
-                                                          this
-                                                      )
+                                                      (this.displayStyle ===
+                                                      DisplayStyle.SIMPLE
+                                                          ? SimpleBookButton
+                                                          : BookButton
+                                                      ).getElement(book, this)
                                               )
                                           )).filter(a => a) as HTMLElement[])
                                       )
-                                  )
-                                : el(
-                                      '.w-1/2.px-1',
-                                      el(
-                                          'h3.tracking-wide.text-xs.text-grey-dark.uppercase.pt-2.pb-1',
-                                          {
-                                              style: {
-                                                  width: 'calc(100% - 1rem)'
-                                              }
-                                          },
-                                          subject
-                                      ),
-                                      ...((await Promise.all(
-                                          sort(booksBySubject[subject]).map(
-                                              (book: any) =>
-                                                  BookListButton.getElement(
-                                                      book,
-                                                      this
-                                                  )
-                                          )
-                                      )).filter(a => a) as HTMLElement[])
                                   )
                     )
                 )
