@@ -33,7 +33,7 @@ export class BookButton {
             }),
             el(
                 '.z-50',
-                el('img.block.bg-grey-light.h-32.mb-4.mx-auto.shadow', {
+                el('img.block.bg-grey-light.h-32.mb-4.mx-auto.shadow-lg', {
                     src: await findCoverUrl(book.id),
                     style: {
                         borderRadius: '15px'
