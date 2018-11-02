@@ -1,14 +1,12 @@
+import { BookButton } from './BookButton';
 import { getImage } from './../../helpers/CoverFinder';
 import { stripBookName } from './../../helpers/BookUtils';
-const dominant = require('huey/dominant');
-import { Pill } from './Pill';
-import axios from 'axios';
 import { el } from 'redom';
 import { Main } from '../../routes/Main';
 import { getDominantColor } from '../../helpers/Colors';
 import { getBookBackground } from '../../helpers/BookUtils';
 
-export class SimpleBookListButton {
+export class SimpleBookListButton extends BookButton {
     static async getElement(book: any, parent: Main) {
         const [r, g, b] = await getDominantColor(
             await getImage(await getBookBackground(book))
@@ -54,29 +52,10 @@ export class SimpleBookListButton {
             )
         );
 
-        bookElement.addEventListener('click', () => {
-            parent.currentlyLoadingBook = book.id;
-            parent.loadingOverlay.style.display = 'block';
-
-            book.getBook().then((actualBook: any) => {
-                if (
-                    parent.currentlyLoadingBook === null ||
-                    parent.currentlyLoadingBook !== book.id
-                )
-                    return; // loading has been cancelled
-                actualBook.getPages().then((pages: any) => {
-                    if (
-                        parent.currentlyLoadingBook === null ||
-                        parent.currentlyLoadingBook !== book.id
-                    )
-                        return; // loading has been cancelled
-                    parent.parent.router.update('book', {
-                        pages,
-                        book: actualBook
-                    });
-                });
-            });
-        });
+        bookElement.addEventListener(
+            'click',
+            this.handleClick.bind(this, book, parent)
+        );
 
         return bookElement;
     }

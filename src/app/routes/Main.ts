@@ -1,10 +1,10 @@
 import { SimpleBookListButton } from './../components/main/SimpleBookListButton';
 import { SimpleBookButton } from './../components/main/SimpleBookButton';
 import { IS_MAC } from './../constants';
-import { BookButton } from './../components/main/BookButton';
+import { TileBookButton } from '../components/main/TileBookButton';
 import { App } from './../App';
 import { el, setChildren } from 'redom';
-import { BookListButton } from '../components/main/BookListButton';
+import { TileBookListButton } from '../components/main/TileBookListButton';
 
 enum GroupingStyle {
     MIXED = 'mixed',
@@ -249,7 +249,7 @@ export class Main {
                                   (this.displayStyle ===
                                   DisplayStyle.SIMPLE_LIST
                                       ? SimpleBookListButton
-                                      : BookListButton
+                                      : TileBookListButton
                                   ).getElement(book, this)
                               )
                           )).filter(a => a) as HTMLElement[]).map(element =>
@@ -262,7 +262,7 @@ export class Main {
                               sort(books).map((book: any) =>
                                   (this.displayStyle === DisplayStyle.SIMPLE
                                       ? SimpleBookButton
-                                      : BookButton
+                                      : TileBookButton
                                   ).getElement(book, this)
                               )
                           )).filter(a => a) as HTMLElement[])
@@ -304,7 +304,7 @@ export class Main {
                                                   (this.displayStyle ===
                                                   DisplayStyle.SIMPLE_LIST
                                                       ? SimpleBookListButton
-                                                      : BookListButton
+                                                      : TileBookListButton
                                                   ).getElement(book, this)
                                           )
                                       )).filter(a => a) as HTMLElement[])
@@ -328,7 +328,7 @@ export class Main {
                                                       (this.displayStyle ===
                                                       DisplayStyle.SIMPLE
                                                           ? SimpleBookButton
-                                                          : BookButton
+                                                          : TileBookButton
                                                       ).getElement(book, this)
                                               )
                                           )).filter(a => a) as HTMLElement[])

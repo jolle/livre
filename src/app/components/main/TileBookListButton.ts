@@ -1,14 +1,13 @@
-import { findCoverUrl, getImage } from './../../helpers/CoverFinder';
-import { stripBookName } from './../../helpers/BookUtils';
-const dominant = require('huey/dominant');
+import { findCoverUrl, getImage } from '../../helpers/CoverFinder';
+import { stripBookName } from '../../helpers/BookUtils';
 import { Pill } from './Pill';
-import axios from 'axios';
 import { el } from 'redom';
 import { Main } from '../../routes/Main';
 import { getBookBackground } from '../../helpers/BookUtils';
 import { getDominantColor } from '../../helpers/Colors';
+import { BookButton } from './BookButton';
 
-export class BookListButton {
+export class TileBookListButton extends BookButton {
     static async getElement(book: any, parent: Main) {
         const backgroundImage = await getBookBackground(book);
         const [r, g, b] = await getDominantColor(
@@ -58,29 +57,10 @@ export class BookListButton {
             )
         );
 
-        bookElement.addEventListener('click', () => {
-            parent.currentlyLoadingBook = book.id;
-            parent.loadingOverlay.style.display = 'block';
-
-            book.getBook().then((actualBook: any) => {
-                if (
-                    parent.currentlyLoadingBook === null ||
-                    parent.currentlyLoadingBook !== book.id
-                )
-                    return; // loading has been cancelled
-                actualBook.getPages().then((pages: any) => {
-                    if (
-                        parent.currentlyLoadingBook === null ||
-                        parent.currentlyLoadingBook !== book.id
-                    )
-                        return; // loading has been cancelled
-                    parent.parent.router.update('book', {
-                        pages,
-                        book: actualBook
-                    });
-                });
-            });
-        });
+        bookElement.addEventListener(
+            'click',
+            this.handleClick.bind(this, book, parent)
+        );
 
         return bookElement;
     }

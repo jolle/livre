@@ -47,7 +47,7 @@ export class App {
             this.router.update('introduction', this.services);
         }
 
-        window.addEventListener('error', () => {
+        window.addEventListener('error', e => {
             alert(
                 'An unexpected error occured. The application will be reopened.'
             );
