@@ -1,3 +1,4 @@
+import { Alert, AlertLevel } from './../components/Alert';
 import { MathEditor } from './../components/MathEditor';
 import { App } from '../App';
 import { el, setChildren } from 'redom';
@@ -248,6 +249,15 @@ export class Exercise {
                         }
                     );
                 }
+            })
+            .catch(e => {
+                console.error(e);
+                Alert.createAlert(
+                    AlertLevel.ERROR,
+                    "Oh no! Livre doesn't support this type of exercise (or theory page) yet. Try again later!"
+                ).on('dismiss', () => {
+                    parent.router.update('book', bookState);
+                });
             });
 
         window.addEventListener(
