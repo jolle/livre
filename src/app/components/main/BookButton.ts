@@ -15,7 +15,7 @@ export class BookButton {
         this.parent.loadingOverlay.style.display = 'block';
 
         this.book.getBook().then((actualBook: any) => {
-            if (this.isStillBeingOpened()) return; // loading has been cancelled
+            if (!this.isStillBeingOpened()) return; // loading has been cancelled
 
             if (!actualBook) {
                 this.parent.currentlyLoadingBook = null;
@@ -28,7 +28,7 @@ export class BookButton {
             }
 
             actualBook.getPages().then((pages: any) => {
-                if (this.isStillBeingOpened()) return; // loading has been cancelled
+                if (!this.isStillBeingOpened()) return; // loading has been cancelled
 
                 this.parent.parent.router.update('book', {
                     pages,
