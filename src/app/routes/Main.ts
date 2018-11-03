@@ -5,6 +5,8 @@ import { TileBookButton } from '../components/main/TileBookButton';
 import { App } from './../App';
 import { el, setChildren } from 'redom';
 import { TileBookListButton } from '../components/main/TileBookListButton';
+// @ts-ignore
+import notebookIllustration from '../assets/notebook-illustration.svg';
 
 enum GroupingStyle {
     MIXED = 'mixed',
@@ -60,7 +62,7 @@ export class Main {
         this.books = [];
 
         this.el = el(
-            '.px-4.bg-grey-lightest.w-screen.h-screen.overflow-y-scroll.overflow-x-hidden',
+            '.px-4.bg-grey-lightest.w-screen.h-screen.overflow-y-scroll.overflow-x-hidden.flex.flex-col',
             (this.loadingOverlay = el(
                 '.absolute.pin-t.pin-b.pin-l.pin-r.flex.items-center.justify-center.z-50',
                 {
@@ -86,7 +88,7 @@ export class Main {
             el(
                 `header.bg-white.pt-${
                     IS_MAC ? '12' : '4'
-                }.py-4.px-6.border-b.border-grey-lighter.-mx-6.sticky.pin-t.z-30`,
+                }.py-4.px-6.border-b.border-grey-lighter.-mx-6.sticky.pin-t.z-30.flex-no-shrink`,
                 el(
                     '.mr-4.text-grey-dark.inline-block.w-64',
                     el(
@@ -164,7 +166,7 @@ export class Main {
                 )
             ),
             (this.bookContainer = el(
-                '.relative.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4.z-10',
+                '.relative.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4.z-10.flex-grow',
                 ...Array(4)
                     .fill(null)
                     .map(() =>
@@ -217,7 +219,27 @@ export class Main {
 
         books = books.reduce((p, n) => p.concat(n), []);
 
-        if (books.length === 0) return;
+        if (books.length === 0) {
+            this.books = [];
+            this.bookContainer.classList.add('flex-col');
+            setChildren(this.bookContainer, [
+                el(
+                    '.flex-grow.w-full.flex.justify-center.items-center',
+                    el(
+                        '.w-64.text-center',
+                        el('img.w-full', {
+                            src: notebookIllustration
+                        }),
+                        el(
+                            '.text-grey.text-sm.mt-4',
+                            'You do not own any book licenses. Perhaps you could buy one?'
+                        )
+                    )
+                )
+            ]);
+            return;
+        }
+        this.bookContainer.classList.remove('flex-col');
 
         this.books = books;
 
@@ -248,7 +270,7 @@ export class Main {
                               sort(books).map((book: any) =>
                                   (this.displayStyle ===
                                   DisplayStyle.SIMPLE_LIST
-                                      ? new SimpleBookButton(book, this)
+                                      ? new SimpleBookListButton(book, this)
                                       : new TileBookListButton(book, this)
                                   ).getElement()
                               )
