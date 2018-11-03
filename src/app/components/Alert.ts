@@ -1,4 +1,5 @@
 import { el } from 'redom';
+import { EventEmitter } from 'events';
 
 export enum AlertLevel {
     ERROR = 'error',
@@ -6,7 +7,7 @@ export enum AlertLevel {
     SUCCESS = 'success'
 }
 
-export class Alert {
+export class Alert extends EventEmitter {
     el: HTMLElement;
 
     constructor(
@@ -14,6 +15,8 @@ export class Alert {
         content: string,
         dismissable: boolean = true
     ) {
+        super();
+
         const titles = {
             [AlertLevel.ERROR]: 'Error',
             [AlertLevel.WARNING]: 'Warning',
@@ -25,7 +28,7 @@ export class Alert {
             [AlertLevel.SUCCESS]: 'bg-green'
         };
 
-        let dismiss: HTMLButtonElement;
+        let dismiss: HTMLButtonElement | null = null;
         this.el = el(
             '.fixed.pin-t.pin-b.pin-r.pin-l.z-50',
             el('.absolute.pin-t.pin-r.pin-b.pin-l', {
@@ -50,18 +53,32 @@ export class Alert {
                     titles[level]
                 ),
                 el('.p-4', content),
-                (dismiss = el(
-                    `button.mb-4.outline-none.mx-auto.${
-                        colors[level]
-                    }.rounded.shadow.text-white.uppercase.font-bold.text-sm.tracking-wide.block.py-3.px-6.hover:shadow-md.active:${
-                        colors[level]
-                    }-dark`,
-                    'Dismiss'
-                ) as HTMLButtonElement)
+                dismissable
+                    ? (dismiss = el(
+                          `button.mb-4.outline-none.mx-auto.${
+                              colors[level]
+                          }.rounded.shadow.text-white.uppercase.font-bold.text-sm.tracking-wide.block.py-3.px-6.hover:shadow-md.active:${
+                              colors[level]
+                          }-dark`,
+                          'Dismiss'
+                      ) as HTMLButtonElement)
+                    : ''
             )
         );
-        dismiss.addEventListener('click', () => {
-            if (this.el) this.el.remove();
-        });
+        if (dismissable && dismiss)
+            dismiss.addEventListener('click', () => {
+                if (this.el) this.el.remove();
+                this.emit('dismiss');
+            });
+    }
+
+    static createAlert(
+        level: AlertLevel,
+        content: string,
+        dismissable: boolean = true
+    ) {
+        const alert = new Alert(level, content, dismissable);
+        document.body.appendChild(alert.el);
+        return alert;
     }
 }

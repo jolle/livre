@@ -8,6 +8,7 @@ import { Main } from './routes/Main';
 import { Book } from './routes/Book';
 import { Exercise } from './routes/Exercise';
 import { Updater } from './Updater';
+import { Alert, AlertLevel } from './components/Alert';
 const { remote } = require('electron');
 
 export class App {
@@ -48,11 +49,13 @@ export class App {
         }
 
         window.addEventListener('error', e => {
-            alert(
+            Alert.createAlert(
+                AlertLevel.ERROR,
                 'An unexpected error occured. The application will be reopened.'
-            );
-            remote.app.relaunch();
-            remote.app.exit(0);
+            ).on('dismiss', () => {
+                remote.app.relaunch();
+                remote.app.exit(0);
+            });
         });
     }
 
