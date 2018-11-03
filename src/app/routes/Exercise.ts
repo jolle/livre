@@ -18,7 +18,11 @@ export class Exercise {
 
     constructor(
         parent: App,
-        { exercise, bookState }: { exercise: Promise<any>; bookState: any }
+        {
+            exercise,
+            bookState,
+            page
+        }: { exercise: Promise<any>; bookState: any; page: any }
     ) {
         this.pendingSaves = [];
         this.intervals = [];
@@ -26,6 +30,7 @@ export class Exercise {
         let openTraditional: HTMLElement;
         let goback: HTMLElement;
         let content: HTMLElement;
+        let bookmark: HTMLElement;
         this.el = el(
             '.min-h-screen.w-screen.bg-grey-lightest',
             (content = el(
@@ -35,12 +40,26 @@ export class Exercise {
                         transition: 'padding 0.25s ease-in-out'
                     }
                 },
+                (bookmark = el(
+                    `.w-16.h-24.border-teal-dark.absolute.pin-t.pin-r.mr-6.cursor-pointer${
+                        page.isBookmarked ? '' : '.opacity-50.-mt-8'
+                    }`,
+                    {
+                        style: {
+                            borderLeftWidth: '2rem',
+                            borderRightWidth: '2rem',
+                            borderBottom: '2rem solid transparent',
+                            transition: 'margin-top 0.12s ease-in-out'
+                        }
+                    }
+                )),
                 (openTraditional = el(
-                    '.absolute.pin-t.pin-r.mt-3.mr-3.text-xs.text-grey.border-b.border-transparent.cursor-pointer.hover:border-grey',
+                    '.absolute.pin-t.pin-r.mt-3.text-xs.text-grey.border-b.border-transparent.cursor-pointer.hover:border-grey',
                     'not showing correctly?',
                     {
                         style: {
-                            display: 'none'
+                            display: 'none',
+                            marginRight: '6.25rem' // mr-25
                         }
                     }
                 )),
@@ -77,6 +96,18 @@ export class Exercise {
 
         goback.addEventListener('click', () => {
             parent.router.update('book', bookState);
+        });
+
+        bookmark.addEventListener('click', () => {
+            const state = bookmark.classList.contains('opacity-50');
+
+            if (state) {
+                bookmark.classList.remove('opacity-50', '-mt-8');
+            } else {
+                bookmark.classList.add('opacity-50', '-mt-8');
+            }
+
+            bookState.book.setBookmark(page, state);
         });
 
         const recalculatePadding = () =>

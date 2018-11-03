@@ -122,7 +122,8 @@ export class Book {
                                                             bookState: {
                                                                 pages,
                                                                 book
-                                                            }
+                                                            },
+                                                            page: bottomPage
                                                         }
                                                     );
                                                 }
