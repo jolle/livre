@@ -7,15 +7,15 @@ import { Main } from '../../routes/Main';
 import { BookButton } from './BookButton';
 
 export class TileBookButton extends BookButton {
-    static async getElement(book: any, parent: Main) {
-        const backgroundImage = await getBookBackground(book);
+    async getElement() {
+        const backgroundImage = await getBookBackground(this.book);
         const [r, g, b] = await getDominantColor(
             await getImage(backgroundImage)
         );
 
         const months =
-            (book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
-            (book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
+            (this.book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
+            (this.book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
 
         const bookElement = el(
             '.relative.bg-white.p-6.rounded.shadow.mb-4.mr-4.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s.overflow-hidden',
@@ -35,7 +35,7 @@ export class TileBookButton extends BookButton {
             el(
                 '.z-50',
                 el('img.block.bg-grey-light.h-32.mb-4.mx-auto.shadow-lg', {
-                    src: await findCoverUrl(book.id),
+                    src: await findCoverUrl(this.book.id),
                     style: {
                         borderRadius: '15px'
                     }
@@ -49,7 +49,7 @@ export class TileBookButton extends BookButton {
                                 textShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
                             }
                         },
-                        stripBookName(book.productName)
+                        stripBookName(this.book.productName)
                     )
                 ),
                 el(
@@ -59,10 +59,7 @@ export class TileBookButton extends BookButton {
             )
         );
 
-        bookElement.addEventListener(
-            'click',
-            this.handleClick.bind(this, book, parent)
-        );
+        bookElement.addEventListener('click', this.handleClick.bind(this));
 
         return bookElement;
     }

@@ -8,15 +8,15 @@ import { getDominantColor } from '../../helpers/Colors';
 import { BookButton } from './BookButton';
 
 export class TileBookListButton extends BookButton {
-    static async getElement(book: any, parent: Main) {
-        const backgroundImage = await getBookBackground(book);
+    async getElement() {
+        const backgroundImage = await getBookBackground(this.book);
         const [r, g, b] = await getDominantColor(
             await getImage(backgroundImage)
         );
 
         const months =
-            (book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
-            (book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
+            (this.book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
+            (this.book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
 
         const bookElement = el(
             '.relative.bg-white.mb-2.p-2.rounded.shadow.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s.overflow-hidden.w-full',
@@ -31,7 +31,7 @@ export class TileBookListButton extends BookButton {
             el(
                 '.z-50.flex.items-center',
                 el('img.inline-block.bg-grey-light.h-8.shadow.rounded', {
-                    src: await findCoverUrl(book.id)
+                    src: await findCoverUrl(this.book.id)
                 }),
                 el(
                     '.flex.justify-between.items-center.w-full',
@@ -44,7 +44,7 @@ export class TileBookListButton extends BookButton {
                                     textShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
                                 }
                             },
-                            stripBookName(book.productName)
+                            stripBookName(this.book.productName)
                         )
                     ),
                     el(
@@ -57,10 +57,7 @@ export class TileBookListButton extends BookButton {
             )
         );
 
-        bookElement.addEventListener(
-            'click',
-            this.handleClick.bind(this, book, parent)
-        );
+        bookElement.addEventListener('click', this.handleClick.bind(this));
 
         return bookElement;
     }

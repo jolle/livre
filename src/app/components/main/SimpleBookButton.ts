@@ -6,14 +6,14 @@ import { el } from 'redom';
 import { Main } from '../../routes/Main';
 
 export class SimpleBookButton extends BookButton {
-    static async getElement(book: any, parent: Main) {
+    async getElement() {
         const [r, g, b] = await getDominantColor(
-            await getImage(await getBookBackground(book))
+            await getImage(await getBookBackground(this.book))
         );
 
         const months =
-            (book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
-            (book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
+            (this.book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
+            (this.book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
 
         const bookElement = el(
             '.relative.p-6.rounded.shadow.mb-4.mr-4.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s.overflow-hidden',
@@ -34,7 +34,7 @@ export class SimpleBookButton extends BookButton {
                                 textShadow: '0 0 15px rgba(0, 0, 0, 0.5)'
                             }
                         },
-                        stripBookName(book.productName)
+                        stripBookName(this.book.productName)
                     )
                 ),
                 el(
@@ -49,10 +49,7 @@ export class SimpleBookButton extends BookButton {
             )
         );
 
-        bookElement.addEventListener(
-            'click',
-            this.handleClick.bind(this, book, parent)
-        );
+        bookElement.addEventListener('click', this.handleClick.bind(this));
 
         return bookElement;
     }

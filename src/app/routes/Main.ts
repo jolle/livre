@@ -248,9 +248,9 @@ export class Main {
                               sort(books).map((book: any) =>
                                   (this.displayStyle ===
                                   DisplayStyle.SIMPLE_LIST
-                                      ? SimpleBookListButton
-                                      : TileBookListButton
-                                  ).getElement(book, this)
+                                      ? new SimpleBookButton(book, this)
+                                      : new TileBookListButton(book, this)
+                                  ).getElement()
                               )
                           )).filter(a => a) as HTMLElement[]).map(element =>
                               el('.w-1/2.inline-block.px-2', element)
@@ -261,9 +261,9 @@ export class Main {
                           ...((await Promise.all(
                               sort(books).map((book: any) =>
                                   (this.displayStyle === DisplayStyle.SIMPLE
-                                      ? SimpleBookButton
-                                      : TileBookButton
-                                  ).getElement(book, this)
+                                      ? new SimpleBookButton(book, this)
+                                      : new TileBookButton(book, this)
+                                  ).getElement()
                               )
                           )).filter(a => a) as HTMLElement[])
                       )
@@ -303,9 +303,15 @@ export class Main {
                                               (book: any) =>
                                                   (this.displayStyle ===
                                                   DisplayStyle.SIMPLE_LIST
-                                                      ? SimpleBookListButton
-                                                      : TileBookListButton
-                                                  ).getElement(book, this)
+                                                      ? new SimpleBookListButton(
+                                                            book,
+                                                            this
+                                                        )
+                                                      : new TileBookListButton(
+                                                            book,
+                                                            this
+                                                        )
+                                                  ).getElement()
                                           )
                                       )).filter(a => a) as HTMLElement[])
                                   )
@@ -327,9 +333,15 @@ export class Main {
                                                   (book: any) =>
                                                       (this.displayStyle ===
                                                       DisplayStyle.SIMPLE
-                                                          ? SimpleBookButton
-                                                          : TileBookButton
-                                                      ).getElement(book, this)
+                                                          ? new SimpleBookButton(
+                                                                book,
+                                                                this
+                                                            )
+                                                          : new TileBookButton(
+                                                                book,
+                                                                this
+                                                            )
+                                                      ).getElement()
                                               )
                                           )).filter(a => a) as HTMLElement[])
                                       )
