@@ -5,6 +5,8 @@ import marked from 'marked';
 import { latexToSvg } from '../helpers/MathJax';
 import { parse } from 'querystring';
 
+// @ts-ignore
+import arrowLeft from '../assets/arrow-left.svg';
 export class Exercise {
     el: HTMLElement;
     messageListener: EventListenerOrEventListenerObject;
@@ -41,10 +43,13 @@ export class Exercise {
                         }
                     }
                 )),
-                (goback = el(
-                    '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3',
-                    '⬅'
-                )),
+                (goback = el('.text-white.w-6.h-6.mt-1.inline-block', {
+                    style: {
+                        mask: `url(${arrowLeft}) no-repeat center`,
+                        webkitMask: `url(${arrowLeft}) no-repeat center`,
+                        backgroundColor: '#fff'
+                    }
+                })),
                 (container = el(
                     '.',
                     el(
@@ -104,8 +109,14 @@ export class Exercise {
             this.el
                 .appendChild(
                     el(
-                        '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3.absolute.pin-t.pin-r.mr-4.mt-4',
-                        '⬅'
+                        '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3',
+                        el('.text-white.w-6.h-6.mt-1.inline-block', {
+                            style: {
+                                mask: `url(${arrowLeft}) no-repeat center`,
+                                webkitMask: `url(${arrowLeft}) no-repeat center`,
+                                backgroundColor: '#fff'
+                            }
+                        })
                     )
                 )
                 .addEventListener('click', e => {

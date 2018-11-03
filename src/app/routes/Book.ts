@@ -3,18 +3,33 @@ import { App } from '../App';
 
 // @ts-ignore
 import chevronRight from '../assets/chevron-right.svg';
+// @ts-ignore
+import arrowLeft from '../assets/arrow-left.svg';
 import { IS_MAC } from '../constants';
 
 export class Book {
     el: HTMLElement;
     book: any;
 
+    goBackButton: HTMLElement;
+
     constructor(parent: App, { pages, book }: { pages: any[]; book: any }) {
         this.book = book;
+
         this.el = el(
             `.bg-grey-lightest.p-4.pt-${
                 IS_MAC ? '12' : '4'
             }.w-screen.h-screen.overflow-scroll`,
+            (this.goBackButton = el(
+                '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3',
+                el('.text-white.w-6.h-6.mt-1.inline-block', {
+                    style: {
+                        mask: `url(${arrowLeft}) no-repeat center`,
+                        webkitMask: `url(${arrowLeft}) no-repeat center`,
+                        backgroundColor: '#fff'
+                    }
+                })
+            )),
             el(
                 'ul.list-reset',
                 pages.filter(page => page.level === 'top').map(page =>
