@@ -20,11 +20,9 @@ export class BookButton {
             if (!actualBook) {
                 this.parent.currentlyLoadingBook = null;
                 this.parent.loadingOverlay.style.display = 'none';
-                document.body.appendChild(
-                    new Alert(
-                        AlertLevel.ERROR,
-                        "Unfortunately the book you tried to open isn't supported by Livre yet. Check again later!"
-                    ).el
+                Alert.createAlert(
+                    AlertLevel.ERROR,
+                    "Unfortunately the book you tried to open isn't supported by Livre yet. Check again later!"
                 );
                 return;
             }
