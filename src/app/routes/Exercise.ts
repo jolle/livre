@@ -44,13 +44,16 @@ export class Exercise {
                         }
                     }
                 )),
-                (goback = el('.text-white.w-6.h-6.mt-1.inline-block', {
-                    style: {
-                        mask: `url(${arrowLeft}) no-repeat center`,
-                        webkitMask: `url(${arrowLeft}) no-repeat center`,
-                        backgroundColor: '#fff'
-                    }
-                })),
+                (goback = el(
+                    '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3',
+                    el('.text-white.w-6.h-6.mt-1.inline-block', {
+                        style: {
+                            mask: `url(${arrowLeft}) no-repeat center`,
+                            webkitMask: `url(${arrowLeft}) no-repeat center`,
+                            backgroundColor: '#fff'
+                        }
+                    })
+                )),
                 (container = el(
                     '.',
                     el(
@@ -110,7 +113,7 @@ export class Exercise {
             this.el
                 .appendChild(
                     el(
-                        '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3',
+                        '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3.absolute.pin-r.-mr-16',
                         el('.text-white.w-6.h-6.mt-1.inline-block', {
                             style: {
                                 mask: `url(${arrowLeft}) no-repeat center`,
