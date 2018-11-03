@@ -8,6 +8,7 @@
     "license": "PRIVATE",
     "private": true,
     "dependencies": {
+        "@types/jquery": "^3.3.22",
         "adm-zip": "^0.4.11",
         "baconjs": "^2.0.9",
         "electron-store": "^2.0.0",

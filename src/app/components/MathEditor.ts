@@ -39,12 +39,7 @@ export class MathEditor extends EventEmitter {
         makeRichText(
             this.answerBox,
             {
-                screenshot: {
-                    saver: (...args: any[]) => {
-                        console.log(args);
-                    },
-                    limit: 10
-                },
+                screenshot: {},
                 baseUrl: 'https://math-demo.abitti.fi',
                 updateMathImg: ($img: any, latex: any) => {
                     latexToSvg(latex).then((svg: any) => {
@@ -60,6 +55,79 @@ export class MathEditor extends EventEmitter {
             },
             (t: any) => this.emit('value', t)
         );
+
+        // removing broken event handler
+        $(this.answerBox).off(
+            'paste',
+            (jQuery as any)._data(this.answerBox, 'events').paste[0].handler
+        );
+        $(this.answerBox).off(
+            'drop',
+            (jQuery as any)._data(this.answerBox, 'events').drop[0].handler
+        );
+
+        // fixed paste event handler
+        this.answerBox.addEventListener('paste', e => {
+            if (e.clipboardData.files.length > 0) {
+                e.stopPropagation();
+                e.preventDefault();
+                Promise.all(
+                    Array.from(e.clipboardData.files).map(file =>
+                        this.readDataAsUrl(file)
+                    )
+                ).then(files => {
+                    files.forEach(url =>
+                        window.document.execCommand(
+                            'insertHTML',
+                            false,
+                            el('img', {
+                                src: url
+                            }).outerHTML
+                        )
+                    );
+                });
+            }
+        });
+        // fixed drop event handler
+        this.answerBox.addEventListener('drop', e => {
+            if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+                Promise.all(
+                    Array.from(e.dataTransfer.files).map(file =>
+                        this.readDataAsUrl(file)
+                    )
+                ).then(files => {
+                    files.forEach(url =>
+                        window.document.execCommand(
+                            'insertHTML',
+                            false,
+                            el('img', {
+                                src: url
+                            }).outerHTML
+                        )
+                    );
+                });
+            } else if (e.dataTransfer) {
+                const data = e.dataTransfer.getData('text/html');
+                if (data && data.indexOf('<img ') > -1) {
+                    e.preventDefault();
+                    Array.from(
+                        new DOMParser()
+                            .parseFromString(data, 'text/html')
+                            .getElementsByTagName('img')
+                    )
+                        .map(img => img.src)
+                        .forEach(url =>
+                            window.document.execCommand(
+                                'insertHTML',
+                                false,
+                                el('img', {
+                                    src: url
+                                }).outerHTML
+                            )
+                        );
+                }
+            }
+        });
     }
 
     // @deprecated
@@ -79,5 +147,16 @@ export class MathEditor extends EventEmitter {
         tmp.remove();
 
         return html;
+    }
+
+    private readDataAsUrl(data: any) {
+        return new Promise(resolve => {
+            const reader = new FileReader();
+            reader.addEventListener(
+                'load',
+                e => e && e.target && resolve((e.target as any).result)
+            );
+            reader.readAsDataURL(data);
+        });
     }
 }
