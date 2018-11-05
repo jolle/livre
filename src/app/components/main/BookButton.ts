@@ -10,7 +10,13 @@ export class BookButton {
         this.parent = parent;
     }
 
-    handleClick() {
+    handleClick(e: Event) {
+        if (
+            e.target &&
+            (e.target as HTMLElement).classList.contains('pin-icon')
+        )
+            return;
+
         this.parent.currentlyLoadingBook = this.book.id;
         this.parent.loadingOverlay.style.display = 'block';
 
@@ -43,5 +49,23 @@ export class BookButton {
             this.parent.currentlyLoadingBook !== null &&
             this.parent.currentlyLoadingBook === this.book.id
         );
+    }
+
+    handlePinClick(pin: boolean) {
+        if (pin) {
+            this.parent.pinnedBooks.push(this.book.id);
+        } else if (this.parent.pinnedBooks.indexOf(this.book.id) > -1) {
+            this.parent.pinnedBooks.splice(
+                this.parent.pinnedBooks.indexOf(this.book.id),
+                1
+            );
+        }
+
+        this.parent.parent.store.set(
+            'livre-pinned-books',
+            this.parent.pinnedBooks
+        );
+
+        this.parent.update(this.parent.books);
     }
 }

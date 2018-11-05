@@ -18,8 +18,10 @@ export class TileBookListButton extends BookButton {
             (this.book.specifier.match(/([0-9]+)\s*kk/i) || [])[1] ||
             (this.book.productName.match(/([0-9]+)\s*kk/i) || [])[1];
 
+        let pin: HTMLElement;
+
         const bookElement = el(
-            '.relative.bg-white.mb-2.p-2.rounded.shadow.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s.overflow-hidden.w-full',
+            '.group.relative.bg-white.mb-2.p-2.rounded.shadow.cursor-pointer.hover:shadow-md.hover:scale-10.transition-all-1/2s.overflow-hidden.w-full',
             el('.absolute.pin-t.pin-b.pin-r.pin-l.-m-6.z-10', {
                 style: {
                     filter: 'blur(20px)',
@@ -48,7 +50,14 @@ export class TileBookListButton extends BookButton {
                         )
                     ),
                     el(
-                        '.ml-4',
+                        '.w-32.flex.justify-between.items-center',
+                        (pin = el(
+                            `.inline-block.shadow${
+                                this.parent.pinnedBooks.includes(this.book.id)
+                                    ? '.pin-icon-active'
+                                    : '.opacity-0.group-hover:opacity-100'
+                            }.w-4.h-4.ml-6.pin-icon.bg-white.-mb-1.transition:opacity`
+                        )),
                         ...(months
                             ? [new Pill(`${months}kk`, [r, g, b]).el]
                             : [])
@@ -58,6 +67,20 @@ export class TileBookListButton extends BookButton {
         );
 
         bookElement.addEventListener('click', this.handleClick.bind(this));
+
+        pin.addEventListener('click', () => {
+            const state = !pin.classList.contains('pin-icon-active');
+
+            if (state) {
+                pin.classList.add('pin-icon-active');
+                pin.classList.remove('opacity-0', 'group-hover:opacity-100');
+            } else {
+                pin.classList.remove('pin-icon-active');
+                pin.classList.add('opacity-0', 'group-hover:opacity-100');
+            }
+
+            this.handlePinClick(state);
+        });
 
         return bookElement;
     }

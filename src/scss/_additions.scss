@@ -157,3 +157,21 @@
     right: 0;
     pointer-events: none;
 }
+
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1 !important;
+}
+
+.transition\:opacity {
+    transition: opacity 0.2s ease-in-out;
+}
+
+.pin-icon {
+    mask: url('../app/assets/pin-hollow.svg') no-repeat center;
+    -webkit-mask: url('../app/assets/pin-hollow.svg') no-repeat center;
+
+    &.pin-icon-active {
+        mask: url('../app/assets/pin-filled.svg') no-repeat center;
+        -webkit-mask: url('../app/assets/pin-filled.svg') no-repeat center;
+    }
+}

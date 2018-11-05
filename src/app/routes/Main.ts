@@ -26,7 +26,6 @@ enum DisplayStyle {
     SIMPLE = 'simple',
     SIMPLE_LIST = 'simple list'
 }
-
 export class Main {
     el: HTMLElement;
     bookContainer: HTMLElement;
@@ -47,6 +46,8 @@ export class Main {
     loadingOverlay: HTMLElement;
     closeLoader: HTMLElement;
 
+    pinnedBooks: string[];
+
     constructor(parent: App) {
         this.parent = parent;
 
@@ -60,6 +61,10 @@ export class Main {
         this.displayStyle =
             parent.store.get('livre-display-style') || DisplayStyle.TILES;
         this.books = [];
+
+        this.pinnedBooks = parent.store.has('livre-pinned-books')
+            ? parent.store.get('livre-pinned-books')
+            : (parent.store.set('livre-pinned-books', []), []);
 
         this.el = el(
             '.px-4.bg-grey-lightest.w-screen.h-screen.overflow-y-scroll.overflow-x-hidden.flex.flex-col',
@@ -166,7 +171,7 @@ export class Main {
                 )
             ),
             (this.bookContainer = el(
-                '.relative.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4.z-10.flex-grow',
+                '.relative.pt-4.flex.items-start.flex-wrap.overflow-scroll.-mr-4.z-10.flex-grow.content-start',
                 ...Array(4)
                     .fill(null)
                     .map(() =>
@@ -241,7 +246,7 @@ export class Main {
         }
         this.bookContainer.classList.remove('flex-col');
 
-        this.books = books;
+        this.books = Array.from(books);
 
         const sort = (books: any[]) => {
             if (this.sortingOrder === SortingOrder.BOUGHT_OLD_TO_NEW)
@@ -260,6 +265,19 @@ export class Main {
             return books;
         };
 
+        let pinned: (Promise<HTMLElement> | undefined)[] = [];
+        if (this.pinnedBooks.length > 0)
+            pinned = this.pinnedBooks
+                .map(bookId => {
+                    const index = books.findIndex(b => b.id === bookId);
+                    if (index > -1) {
+                        const copyOfBook = { ...books[index] };
+                        books.splice(index, 1);
+                        return copyOfBook;
+                    }
+                })
+                .filter(a => a);
+
         if (this.groupingStyle === GroupingStyle.MIXED) {
             setChildren(this.bookContainer, [
                 this.displayStyle === DisplayStyle.LIST ||
@@ -267,7 +285,7 @@ export class Main {
                     ? el(
                           '.overflow-scroll.w-full.pr-4',
                           ...((await Promise.all(
-                              sort(books).map((book: any) =>
+                              [...pinned, ...sort(books)].map((book: any) =>
                                   (this.displayStyle ===
                                   DisplayStyle.SIMPLE_LIST
                                       ? new SimpleBookListButton(book, this)
@@ -281,7 +299,7 @@ export class Main {
                     : el(
                           '.flex.items-start.flex-wrap.overflow-scroll.-mr-4',
                           ...((await Promise.all(
-                              sort(books).map((book: any) =>
+                              [...pinned, ...sort(books)].map((book: any) =>
                                   (this.displayStyle === DisplayStyle.SIMPLE
                                       ? new SimpleBookButton(book, this)
                                       : new TileBookButton(book, this)
@@ -291,17 +309,21 @@ export class Main {
                       )
             ]);
         } else if (this.groupingStyle === GroupingStyle.BY_SUBJECT) {
-            const booksBySubject = books.reduce(
-                (p, n) => ({
-                    ...p,
-                    ...{
-                        [n.subjectClass]: p[n.subjectClass]
-                            ? [...p[n.subjectClass], n]
-                            : [n]
-                    }
-                }),
-                {}
-            );
+            const booksBySubject = {
+                pinned,
+                ...books.reduce(
+                    (p, n) => ({
+                        ...p,
+                        ...{
+                            [n.subjectClass]: p[n.subjectClass]
+                                ? [...p[n.subjectClass], n]
+                                : [n]
+                        }
+                    }),
+                    {}
+                )
+            };
+            if (pinned.length === 0) delete booksBySubject.pinned;
             setChildren(
                 this.bookContainer,
                 await Promise.all(
