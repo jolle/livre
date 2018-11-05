@@ -173,13 +173,11 @@ export class Book {
             open = !open;
 
             if (open) {
-                const start = Date.now();
                 const handler = () => {
                     childrenElement.removeEventListener(
                         'transitionend',
                         handler
                     );
-                    if (Date.now() - start > 300 * 1.25) return; // 25% margin
                     childrenElement.style.height = 'auto';
                 };
                 childrenElement.addEventListener('transitionend', handler);
