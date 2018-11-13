@@ -4,7 +4,8 @@ import { EventEmitter } from 'events';
 export enum AlertLevel {
     ERROR = 'error',
     WARNING = 'warning',
-    SUCCESS = 'success'
+    SUCCESS = 'success',
+    INFO = 'info'
 }
 
 export class Alert extends EventEmitter {
@@ -12,20 +13,23 @@ export class Alert extends EventEmitter {
 
     constructor(
         level: AlertLevel,
-        content: string,
-        dismissable: boolean = true
+        content: string | HTMLElement,
+        dismissable: boolean | string = true,
+        customButtons?: HTMLElement[]
     ) {
         super();
 
         const titles = {
             [AlertLevel.ERROR]: 'Error',
             [AlertLevel.WARNING]: 'Warning',
-            [AlertLevel.SUCCESS]: 'Success'
+            [AlertLevel.SUCCESS]: 'Success',
+            [AlertLevel.INFO]: 'Information'
         };
         const colors = {
             [AlertLevel.ERROR]: 'bg-red',
             [AlertLevel.WARNING]: 'bg-orange',
-            [AlertLevel.SUCCESS]: 'bg-green'
+            [AlertLevel.SUCCESS]: 'bg-green',
+            [AlertLevel.INFO]: 'bg-blue'
         };
 
         let dismiss: HTMLButtonElement | null = null;
@@ -53,31 +57,54 @@ export class Alert extends EventEmitter {
                     titles[level]
                 ),
                 el('.p-4', content),
-                dismissable
-                    ? (dismiss = el(
-                          `button.mb-4.outline-none.mx-auto.${
-                              colors[level]
-                          }.rounded.shadow.text-white.uppercase.font-bold.text-sm.tracking-wide.block.py-3.px-6.hover:shadow-md.active:${
-                              colors[level]
-                          }-dark`,
-                          'Dismiss'
-                      ) as HTMLButtonElement)
-                    : ''
+                el(
+                    '.w-full.justify-center.flex.items-center.mb-4',
+                    ...(customButtons || []).map(btn =>
+                        btn.className.indexOf('mr-')
+                            ? btn
+                            : (btn.classList.add('mr-2'), btn)
+                    ),
+                    ...(dismissable
+                        ? [
+                              (dismiss = el(
+                                  `button.outline-none.mx-auto.${
+                                      colors[level]
+                                  }.rounded.shadow.text-white.uppercase.font-bold.text-sm.tracking-wide.block.py-3.px-6.hover:shadow-md.active:${
+                                      colors[level]
+                                  }-dark`,
+                                  typeof dismissable === 'string'
+                                      ? dismissable
+                                      : 'Dismiss'
+                              ) as HTMLButtonElement)
+                          ]
+                        : [])
+                )
             )
         );
+
         if (dismissable && dismiss)
             dismiss.addEventListener('click', () => {
                 if (this.el) this.el.remove();
                 this.emit('dismiss');
             });
+
+        (customButtons || []).forEach(btn =>
+            btn.addEventListener('click', () => {
+                this.emit('customButtonPress', {
+                    btn,
+                    dismiss: () => this.el && this.el.remove()
+                });
+            })
+        );
     }
 
     static createAlert(
         level: AlertLevel,
-        content: string,
-        dismissable: boolean = true
+        content: string | HTMLElement,
+        dismissable: boolean | string = true,
+        customButtons?: HTMLElement[]
     ) {
-        const alert = new Alert(level, content, dismissable);
+        const alert = new Alert(level, content, dismissable, customButtons);
         document.body.appendChild(alert.el);
         return alert;
     }

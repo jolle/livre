@@ -15,6 +15,9 @@ export class Exercise {
     intervals: any[];
 
     savingContainer: HTMLElement;
+    errorLastUploadedContainer: HTMLElement;
+    lastUploaded: number = 0;
+    shownSaveError: boolean = false;
 
     constructor(
         parent: App,
@@ -84,6 +87,16 @@ export class Exercise {
                     '.fixed.pin-r.mb-4.mr-4.bg-white.shadow-lg.rounded.p-3.uppercase.text-grey-darkest.tracking-wide.text-xs',
                     el('.loader-small.inline-block.align-middle.mr-2'),
                     'Saving...',
+                    {
+                        style: {
+                            bottom: '-200px',
+                            transition: 'bottom 0.5s ease-in-out'
+                        }
+                    }
+                )),
+                (this.errorLastUploadedContainer = el(
+                    '.fixed.pin-l.ml-4.mb-4.bg-red.shadow-lg.rounded.p-3.uppercase.text-white.tracking-wide.text-xs',
+                    'Last uploaded: never',
                     {
                         style: {
                             bottom: '-200px',
@@ -183,11 +196,38 @@ export class Exercise {
                         : []),
                     ...((await Promise.all((content.questions || []).map(
                         async (sub: any) => {
+                            const storeId = `livre-exercise-answer-${page.id}-${
+                                sub.id
+                            }`;
+                            const cachedAnswer = parent.store.get(storeId);
+
                             let showCorrectAnswer: HTMLElement;
                             let answerContainer: HTMLElement;
                             let editor: MathEditor;
+                            let recoverBtn: HTMLElement | null = null;
+                            let recoverQuestionBtn: HTMLElement | null = null;
+                            let recoverContainer: HTMLElement | null = null;
                             const element = el(
                                 '.mt-5',
+                                ...(cachedAnswer &&
+                                cachedAnswer !== sub.savedAnswer &&
+                                (!sub.savedAnswer ||
+                                    cachedAnswer !==
+                                        sub.savedAnswer.replace(/\\\\/g, '\\'))
+                                    ? [
+                                          (recoverContainer = el(
+                                              '.flex.items-center.mb-4',
+                                              (recoverBtn = el(
+                                                  '.inline.cursor-pointer.bg-red.shadow.px-4.py-2.rounded.text-white.tracking-wide.uppercase.font-bold.text-sm',
+                                                  'Recover Answer'
+                                              )),
+                                              (recoverQuestionBtn = el(
+                                                  '.inline-block.text-xl.text-white.bg-grey.rounded-full.h-8.w-8.cursor-pointer.shadow.ml-2.text-center.pt-1',
+                                                  '?'
+                                              ))
+                                          ))
+                                      ]
+                                    : []),
                                 sub.caption,
                                 (editor = new MathEditor(sub.savedAnswer)).el,
                                 ...(sub.answer
@@ -248,8 +288,70 @@ export class Exercise {
                                             )
                                         );
                                     }
+
+                                    parent.store.set(storeId, value);
                                 }
                             );
+
+                            if (recoverBtn)
+                                recoverBtn.addEventListener('click', () => {
+                                    let recoveredContentContainer: HTMLElement;
+                                    const alert = new Alert(
+                                        AlertLevel.SUCCESS,
+                                        el(
+                                            '.',
+                                            el(
+                                                'p',
+                                                'We found a version of this exercise saved on this machine, but it differs from the version we found on Otava. Would you like to recover it?'
+                                            ),
+                                            el(
+                                                '.font-bold.text-grey-darker.uppercase.text-sm.tracking-wide.my-2',
+                                                'Recovered version'
+                                            ),
+                                            (recoveredContentContainer = el(
+                                                '.rounded.bg-grey-lighter.p-2'
+                                            ))
+                                        ),
+                                        false,
+                                        [
+                                            el(
+                                                `button#recover.outline-none.bg-green.rounded.shadow.text-white.uppercase.font-bold.text-sm.tracking-wide.block.py-3.px-6.hover:shadow-md.active:bg-green-dark`,
+                                                'Recover!'
+                                            ),
+                                            el(
+                                                `button.ml-2.outline-none.cursor-pointer.text-grey-light.text-sm.block.border-b.border-transparent.hover:border-grey-light.h-4`,
+                                                'No thanks'
+                                            )
+                                        ]
+                                    );
+                                    recoveredContentContainer.innerHTML = cachedAnswer;
+
+                                    alert.on(
+                                        'customButtonPress',
+                                        ({ btn, dismiss }) => {
+                                            if (recoverContainer)
+                                                recoverContainer.remove();
+
+                                            dismiss();
+
+                                            if (btn.id && btn.id === 'recover')
+                                                editor.answerBox.innerHTML = cachedAnswer;
+                                        }
+                                    );
+
+                                    document.body.appendChild(alert.el);
+                                });
+
+                            if (recoverQuestionBtn)
+                                recoverQuestionBtn.addEventListener(
+                                    'click',
+                                    () =>
+                                        Alert.createAlert(
+                                            AlertLevel.INFO,
+                                            "Livre saves your answers on your machine temporarily. If the answer isn't uploaded online for some reason (e.g. an Internet connection failure), Livre might be able to recover the answer next time opening the exercise."
+                                        )
+                                );
+
                             return element;
                         }
                     ) as HTMLElement[])) as HTMLElement[])
@@ -378,7 +480,30 @@ export class Exercise {
             }
 
             if (res === false) {
-                alert('failed to save answer');
+                this.errorLastUploadedContainer.innerHTML = `Last uploaded at ${new Date(
+                    this.lastUploaded
+                )
+                    .toLocaleDateString('en-US', {
+                        hour12: false,
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                    .split(', ')
+                    .pop()}`;
+                this.errorLastUploadedContainer.style.bottom = '0';
+
+                if (!this.shownSaveError) {
+                    Alert.createAlert(
+                        AlertLevel.ERROR,
+                        'Saving the exercise answers to Otava failed. Check your internet connection or try again later.',
+                        true
+                    );
+                    this.shownSaveError = true;
+                }
+            } else {
+                this.errorLastUploadedContainer.style.bottom = '-200px';
+                this.lastUploaded = Date.now();
+                this.shownSaveError = false; // after a successful save, alert on the next unsuccessful one
             }
         });
     }

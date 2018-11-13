@@ -4050,7 +4050,7 @@ osenv@^0.1.4:
     os-tmpdir "^1.0.0"
 
 "otava-digikirja-api@file:../otava-digikirja-api":
-  version "1.2.2"
+  version "1.2.3"
   dependencies:
     "@3846masa/axios-cookiejar-support" "^0.4.2"
     "@types/sockjs-client" "^1.1.0"
@@ -6064,8 +6064,8 @@ url-parse-lax@^1.0.0:
     prepend-http "^1.0.1"
 
 url-parse@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.3.tgz#bfaee455c889023219d757e045fa6a684ec36c15"
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/url-parse/-/url-parse-1.4.4.tgz#cac1556e95faa0303691fec5cf9d5a1bc34648f8"
   dependencies:
     querystringify "^2.0.0"
     requires-port "^1.0.0"

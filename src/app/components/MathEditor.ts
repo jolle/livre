@@ -1,6 +1,7 @@
 import { latexToSvg } from './../helpers/MathJax';
 import { el } from 'redom';
 import { EventEmitter } from 'events';
+import { Alert, AlertLevel } from './Alert';
 (window as any).$ = (window as any).jQuery = require('jquery');
 require('mathquill/build/mathquill');
 const { makeRichText } = require('rich-text-editor/dist/rich-text-editor');
@@ -25,13 +26,27 @@ export class MathEditor extends EventEmitter {
         );
 
         this.answerBox.innerHTML = value;
+        this.answerBox
+            .querySelectorAll('img[alt][src^="data:image/svg+xml;base64,"]')
+            .forEach(mathObject => {
+                const alt = mathObject.attributes.getNamedItem('alt');
+                if (
+                    alt &&
+                    alt.value.indexOf('\\\\') > -1 &&
+                    mathObject instanceof HTMLImageElement
+                ) {
+                    mathObject.alt = alt.value.replace(/\\\\/g, '\\');
+                }
+            });
 
         this.answerBox
             .querySelectorAll('math.wrs_highschool')
             .forEach(wiris =>
                 wiris.addEventListener('click', () =>
-                    alert(
-                        "This math object has been written using the Cloubi Wiris editor which isn't supported by Livre. Either remove this object and replace it with a new Livre math object or edit the object on Cloubi."
+                    Alert.createAlert(
+                        AlertLevel.WARNING,
+                        "This math object was created using the Wiris editor on Cloubi. Livre doesn't support Wiris and as such you cannot modify the object. Please remove and rewrite the object using Livre's editor in order to use it again.",
+                        true
                     )
                 )
             );
