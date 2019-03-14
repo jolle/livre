@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Livre</title>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Livre</title>
+        <link rel="stylesheet" href="./scss/_all.scss" />
+        <script>
+            window.isLivre = true;
+        </script>
+        <style>
+            ::-webkit-scrollbar {
+                display: none;
+            }
+        </style>
+    </head>
 
-    <link rel="stylesheet" href="./scss/_all.scss">
-    <script>window.isLivre = true</script>
-    <style>
-        ::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
-</head>
-
-<body class="bg-white">
-    <div class="draggable-area"></div>
-    <script src="./index.ts"></script>
-</body>
-
+    <body class="bg-white">
+        <div class="draggable-area"></div>
+        <script src="./index.ts"></script>
+    </body>
 </html>

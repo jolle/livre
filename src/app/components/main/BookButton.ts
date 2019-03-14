@@ -38,7 +38,8 @@ export class BookButton {
 
                 this.parent.parent.router.update('book', {
                     pages,
-                    book: actualBook
+                    book: actualBook,
+                    bookSkeleton: this.book
                 });
             });
         });

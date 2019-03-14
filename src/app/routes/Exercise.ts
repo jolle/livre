@@ -19,6 +19,9 @@ export class Exercise {
     lastUploaded: number = 0;
     shownSaveError: boolean = false;
 
+    parent: App;
+    bookState: any;
+
     constructor(
         parent: App,
         {
@@ -27,6 +30,8 @@ export class Exercise {
             page
         }: { exercise: Promise<any>; bookState: any; page: any }
     ) {
+        this.parent = parent;
+        this.bookState = bookState;
         this.pendingSaves = [];
         this.intervals = [];
         let container: HTMLElement;
@@ -120,6 +125,8 @@ export class Exercise {
                 bookmark.classList.add('opacity-50', '-mt-8');
             }
 
+            page.isBookmarked = state;
+
             bookState.book.setBookmark(page, state);
         });
 
@@ -129,66 +136,28 @@ export class Exercise {
             )[0] as HTMLElement).offsetHeight;
 
         let url: string = '';
-        let iframe: HTMLIFrameElement | undefined;
         openTraditional.addEventListener('click', () => {
-            if (!url)
-                return alert('Application not ready. Try again in a moment.');
-            let iframeContainer: HTMLElement;
-            iframeContainer = this.el.appendChild(
-                el(
-                    '.absolute.pin-t.pin-b.pin-r.pin-l.pin-b.overflow-scroll.bg-white.w-4/5.mx-auto',
-                    (iframe = el('iframe.border-none.w-full', {
-                        src: url,
-                        style: {
-                            height: '100%'
-                        }
-                    }) as HTMLIFrameElement)
-                )
-            );
-            iframe.addEventListener('load', () => {
-                if (!iframe || !iframe.contentDocument) return;
-                const element = iframe.contentDocument.getElementById(
-                    'wrapper'
-                );
-                if (!element) return;
-                element.style.maxWidth = '100%';
-                element.style.width = '100%';
-            });
-            this.el
-                .appendChild(
-                    el(
-                        '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3.absolute.pin-r.-mr-16',
-                        el('.text-white.w-6.h-6.mt-1.inline-block', {
-                            style: {
-                                mask: `url(${arrowLeft}) no-repeat center`,
-                                webkitMask: `url(${arrowLeft}) no-repeat center`,
-                                backgroundColor: '#fff'
-                            }
-                        })
-                    )
-                )
-                .addEventListener('click', e => {
-                    if (e.target) (e.target as HTMLElement).remove();
-                    if (iframe) iframe.remove();
-                    if (iframeContainer) iframeContainer.remove();
-                    iframe = undefined;
-                });
+            this.openFallback(url);
         });
 
         exercise
-            .then(async content => ({
-                ...content,
-                questions: await Promise.all(
-                    (content.questions || []).map(async (a: any) => ({
-                        ...a,
-                        caption: await this.markdownify(a.caption),
-                        clue: a.clue && (await this.markdownify(a.clue))
-                    }))
-                ),
-                original: content
-            }))
+            .then(
+                async content => (
+                    (url = content.originalUrl),
+                    {
+                        ...content,
+                        questions: await Promise.all(
+                            (content.questions || []).map(async (a: any) => ({
+                                ...a,
+                                caption: await this.markdownify(a.caption),
+                                clue: a.clue && (await this.markdownify(a.clue))
+                            }))
+                        ),
+                        original: content
+                    }
+                )
+            )
             .then(async content => {
-                url = content.originalUrl;
                 openTraditional.style.display = 'block';
                 setChildren(container, [
                     ...(content.title
@@ -276,7 +245,7 @@ export class Exercise {
                                 }) => {
                                     if (
                                         value &&
-                                        +new Date() - +previous > 1000 &&
+                                        +new Date() - +previous > 5000 &&
                                         previousValue !== value
                                     ) {
                                         previousValue = value;
@@ -386,25 +355,37 @@ export class Exercise {
                     );
                 }
             })
-            .catch(e => {
+            .catch(async e => {
                 console.error(e);
-                Alert.createAlert(
+                /*Alert.createAlert(
                     AlertLevel.ERROR,
-                    "Oh no! Livre doesn't support this type of exercise (or theory page) yet. Try again later!"
-                ).on('dismiss', () => {
-                    parent.router.update('book', bookState);
-                });
+                    "Oh no! Livre doesn't support this type of exercise (or theory page) yet. Try again later!",
+                    false,
+                    [el('#fallback', 'Use fallback'), el('#dismiss', 'Dismiss')]
+                ).on('customButtonPress', async ({ dismiss, btn }) => {
+                    dismiss();
+                    if (btn.id === 'fallback')
+                        */ this.shouldReturnToBookOnExit = true;
+                this.openFallback(
+                    url
+                        ? url
+                        : await bookState.book.getExerciseOriginalUrl(page)
+                );
+                //else parent.router.update('book', bookState);
+                //});
             });
 
         window.addEventListener(
             'message',
             (this.messageListener = (e: any) => {
-                if (iframe && /^[0-9]+$/.test(e.data)) {
-                    iframe.style.height = `${e.data}px`;
+                if (this.iframe && /^[0-9]+$/.test(e.data)) {
+                    this.iframe.style.height = `${e.data}px`;
                 }
             })
         );
     }
+
+    iframe?: HTMLIFrameElement;
 
     onunmount() {
         window.removeEventListener('message', this.messageListener);
@@ -419,7 +400,7 @@ export class Exercise {
 
     private async markdownify(str: string) {
         str = str.replace(/<\\\//g, '</'); // fixes stuff like <\/nobr>
-        str = str.replace(/\\n/g, '<br/>'); // newlines to linebreaks
+        str = str.replace(/\\n/g, '<br/>').replace(/\\r/g, ''); // newlines to linebreaks
         str = str.replace(/\\u([0-9]{4})/g, (_, a) => JSON.parse(`"\\u${a}"`)); // unescape unicode escape codes
         str = marked(str); // use `marked` for some rudimentary markdown parsing
         str = str.replace(
@@ -448,14 +429,14 @@ export class Exercise {
             }
         );
         str = str.replace(
-            /([0-9]+)_([^_]+)_/g,
+            /([0-9]+)_([a-zA-Z0-9]+)_/g,
             (_, multiplier, variable) => `${multiplier}<i>${variable}</i>`
         );
 
         const svgs = await Promise.all(
             // loads values that are encased in $s to SVGs via latex
             (str.match(/\$([^$]+)\$/g) || []).map(val =>
-                latexToSvg(val.slice(1, -1))
+                latexToSvg(val.slice(1, -1).replace(/\/ight/g, '/right'))
             )
         );
 
@@ -518,5 +499,56 @@ export class Exercise {
         };
 
         return str.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    shouldReturnToBookOnExit: boolean = false;
+
+    private openFallback(url: string) {
+        if (!url) return alert('Application not ready. Try again in a moment.');
+
+        let iframeContainer: HTMLElement;
+        iframeContainer = this.el.appendChild(
+            el(
+                '.absolute.pin-t.pin-b.pin-r.pin-l.pin-b.overflow-scroll.bg-white.w-4/5.mx-auto',
+                (this.iframe = el('iframe.border-none.w-full', {
+                    src: url,
+                    style: {
+                        height: '100%'
+                    }
+                }) as HTMLIFrameElement)
+            )
+        );
+        this.iframe.addEventListener('load', () => {
+            if (!this.iframe || !this.iframe.contentDocument) return;
+            const element = this.iframe.contentDocument.getElementById(
+                'wrapper'
+            );
+            if (!element) return;
+            element.style.maxWidth = '100%';
+            element.style.width = '100%';
+        });
+        this.el
+            .appendChild(
+                el(
+                    '.rounded-full.bg-grey.hover:bg-grey-dark.cursor-pointer.text-white.text-center.leading-loose.text-lg.w-8.h-8.mb-3.absolute.pin-r.pin-t.mt-4.mr-4#gobackbtn',
+                    el('.text-white.w-6.h-6.mt-1.inline-block', {
+                        style: {
+                            mask: `url(${arrowLeft}) no-repeat center`,
+                            webkitMask: `url(${arrowLeft}) no-repeat center`,
+                            backgroundColor: '#fff'
+                        }
+                    })
+                )
+            )
+            .addEventListener('click', () => {
+                const btn = document.getElementById('gobackbtn');
+                if (btn) btn.remove();
+                if (this.iframe) this.iframe.remove();
+                if (iframeContainer) iframeContainer.remove();
+                delete this.iframe;
+
+                if (this.shouldReturnToBookOnExit)
+                    this.parent.router.update('book', this.bookState);
+            });
     }
 }
